@@ -1,0 +1,28 @@
+{
+  "retrieved_at_utc": "2026-09-17T21:06:26.283614+00:00",
+  "url": "https://api.weather.gov/gridpoints/OKX/42,40/forecast/hourly",
+  "status": 200,
+  "sha256": "c8eabfe541af04be33f1769994b3d552731eaf8448891359cd57ef4adc28cd81",
+  "headers": {
+    "Server": "nginx/1.28.3",
+    "Content-Type": "application/geo+json",
+    "Last-Modified": "Thu, 17 Sep 2026 20:59:58 GMT",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Expose-Headers": "X-Correlation-Id, X-Request-Id, X-Server-Id",
+    "X-Request-ID": "01a0b131-30a5-701d-96d2-e7e9e218fc73",
+    "X-Correlation-ID": "11feda8d",
+    "X-Server-ID": "vm-cprk-api-ops-app15.ncep.noaa.gov",
+    "ETag": "W/\"1789678800:dtagent10337260504112723F6xZ:dtagent10337260504112723F6xZ\"",
+    "Server-Timing": "dtTrId;desc=\"419a151a2ca7bd3291fa152d2b189d02\", dtSInfo;desc=\"0\"",
+    "Content-Encoding": "gzip",
+    "Content-Length": "5058",
+    "Cache-Control": "public, max-age=3600, s-maxage=3600",
+    "Expires": "Thu, 17 Sep 2026 22:06:26 GMT",
+    "Date": "Thu, 17 Sep 2026 21:06:26 GMT",
+    "Connection": "keep-alive",
+    "Vary": "Accept-Encoding, Accept,Feature-Flags,Accept-Language",
+    "Set-Cookie": "dtCookie1up6hiss=v_4_srv_1_sn_0DE4E8042DA9125C67184F8D74F7D36C_perc_100000_ol_0_mul_1_app-3Aea7c4b59f27d43eb_1; Path=/; Domain=.weather.gov",
+    "X-Edge-Request-ID": "1ad8d1e",
+    "Strict-Transport-Security": "max-age=31536000 ; includeSubDomains ; preload"
+  }
+}

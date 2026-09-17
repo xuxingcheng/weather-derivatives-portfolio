@@ -1,0 +1,22 @@
+{
+  "retrieved_at_utc": "2026-09-17T21:06:35.702607+00:00",
+  "url": "https://aviationweather.gov/api/data/metar?ids=KJFK&format=json&hours=48",
+  "status": 200,
+  "sha256": "316416f4cd917282ec00ddfb1fbfd128eee35fe4db289c9bf3a88c4e613bab0d",
+  "headers": {
+    "Date": "Thu, 17 Sep 2026 21:06:35 GMT",
+    "Content-Type": "application/json; charset=utf-8",
+    "Transfer-Encoding": "chunked",
+    "Connection": "keep-alive",
+    "Vary": "Accept-Encoding",
+    "Cache-control": "max-age=60",
+    "ETag": "W/\"645e-wB96jU/16NWDNERPualg9ZSen5s\"",
+    "X-Frame-Options": "SAMEORIGIN",
+    "Content-Security-Policy": "frame-ancestors 'self' *.weather.gov",
+    "Strict-Transport-Security": "max-age=63072000; includeSubDomains",
+    "x-azure-ref": "20260917T210626Z-17755b89dc749jvzhC1IAD8tfg0000001g50000000006wg0",
+    "x-fd-int-roxy-purgeid": "66959004",
+    "X-Cache": "TCP_MISS",
+    "Content-Encoding": "gzip"
+  }
+}

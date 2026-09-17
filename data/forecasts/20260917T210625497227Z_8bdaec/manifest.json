@@ -1,0 +1,12 @@
+{
+  "started_at_utc": "2026-09-17T21:06:25.497449+00:00",
+  "station": "KJFK",
+  "products": {
+    "nws_hourly": "20260917T210626283120Z_nws_hourly.json",
+    "taf": "20260917T210626443662Z_taf.json",
+    "metar": "20260917T210635701617Z_metar.json"
+  },
+  "errors": {},
+  "forecast_valid_through": "2026-09-24T05:00:00-04:00",
+  "completed_at_utc": "2026-09-17T21:06:35.705766+00:00"
+}
