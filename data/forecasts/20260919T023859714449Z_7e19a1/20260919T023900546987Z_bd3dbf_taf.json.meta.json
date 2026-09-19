@@ -1,0 +1,21 @@
+{
+  "retrieved_at_utc": "2026-09-19T02:39:00.547456+00:00",
+  "url": "https://aviationweather.gov/api/data/taf?ids=KJFK&format=json",
+  "status": 200,
+  "sha256": "4d307e667a7500d774b8d1fa30996ff0dcbb64be27864c38a8ad7924893450eb",
+  "headers": {
+    "Date": "Sat, 19 Sep 2026 02:39:00 GMT",
+    "Content-Type": "application/json; charset=utf-8",
+    "Transfer-Encoding": "chunked",
+    "Connection": "keep-alive",
+    "Vary": "Accept-Encoding",
+    "Cache-control": "max-age=60",
+    "ETag": "W/\"77c-gndXQX1qjWk2jwOBl2BBO3kqqZg\"",
+    "X-Frame-Options": "SAMEORIGIN",
+    "Content-Security-Policy": "frame-ancestors 'self' *.weather.gov",
+    "Strict-Transport-Security": "max-age=63072000; includeSubDomains",
+    "x-azure-ref": "20260919T023900Z-17fd58bbc9c4ktg6hC1IAD1dys0000002xe0000000008vzh",
+    "X-Cache": "CONFIG_NOCACHE",
+    "Content-Encoding": "gzip"
+  }
+}

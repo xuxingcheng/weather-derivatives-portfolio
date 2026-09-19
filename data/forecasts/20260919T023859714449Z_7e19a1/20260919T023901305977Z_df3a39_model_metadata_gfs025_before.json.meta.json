@@ -1,0 +1,15 @@
+{
+  "retrieved_at_utc": "2026-09-19T02:39:01.307093+00:00",
+  "url": "https://ensemble-api.open-meteo.com/data/ncep_gefs025/static/meta.json",
+  "status": 200,
+  "sha256": "3133587328c1716870c8e0d5e71eb3551b00a0ff8efae1b3a15007e204bbe661",
+  "headers": {
+    "Date": "Sat, 19 Sep 2026 02:39:01 GMT",
+    "Content-Type": "application/json; charset=utf-8",
+    "Transfer-Encoding": "chunked",
+    "Connection": "keep-alive",
+    "last-modified": "Fri, 18 Sep 2026 23:43:07 GMT",
+    "etag": "\"1789774987-596\"",
+    "Content-Encoding": "deflate"
+  }
+}

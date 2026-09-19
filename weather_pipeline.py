@@ -5,6 +5,9 @@ import calendar
 from datetime import datetime, timezone
 import hashlib
 import json
+import math
+import re
+from urllib.parse import urlencode
 import time
 import uuid
 import pandas as pd
@@ -24,26 +27,37 @@ def now():
     return datetime.now(timezone.utc)
 
 def fetch(url, directory, stem, extension='json'):
-    """Keep original bytes, receipt time, URL, response headers, and checksum."""
+    """Preserve every HTTP response, including errors, before validation/retry."""
     directory.mkdir(parents=True, exist_ok=True)
     for attempt in range(3):
+        r = None
         try:
             r = requests.get(url, headers={'User-Agent': 'JFK-Weather-Research/1.0', 'Accept': '*/*'}, timeout=60)
+            stamp = now().strftime('%Y%m%dT%H%M%S%fZ') + '_' + uuid.uuid4().hex[:6]
+            suffix = '' if r.ok else '_failed'
+            path = directory / f'{stamp}_{stem}{suffix}.{extension}'
+            path.write_bytes(r.content)
+            metadata = {'retrieved_at_utc': now().isoformat(), 'url': url, 'status': r.status_code,
+                        'sha256': hashlib.sha256(r.content).hexdigest(), 'headers': dict(r.headers)}
+            path.with_suffix(path.suffix + '.meta.json').write_text(json.dumps(metadata, indent=2))
             r.raise_for_status()
             if not r.content:
                 raise ValueError(f'Empty response: {url}')
-            break
+            return path
         except (requests.RequestException, ValueError):
             if attempt == 2:
                 raise
-            time.sleep(2 ** attempt)
-    stamp = now().strftime('%Y%m%dT%H%M%S%fZ')
-    path = directory / f'{stamp}_{stem}.{extension}'
-    path.write_bytes(r.content)
-    metadata = {'retrieved_at_utc': now().isoformat(), 'url': url, 'status': r.status_code,
-                'sha256': hashlib.sha256(r.content).hexdigest(), 'headers': dict(r.headers)}
-    path.with_suffix(path.suffix + '.meta.json').write_text(json.dumps(metadata, indent=2))
-    return path
+            if r is not None and r.status_code == 429:
+                # Do not aggressively retry a rate limit or hold the archive for minutes.
+                wait = r.headers.get('Retry-After', '2')
+                if not wait.isdigit() or int(wait) > 30:
+                    raise
+                time.sleep(max(int(wait), 2 ** attempt))
+            elif r is not None and 400 <= r.status_code < 500:
+                raise
+            else:
+                time.sleep(2 ** attempt)
+
 
 def refresh_observations():
     paths = {}
@@ -56,11 +70,11 @@ def refresh_observations():
         paths[f'metar_{days_back}'] = str(fetch(url, RAW / 'metar', ICAO))
     return paths
 
-def archive_forecasts():
+def archive_forecasts(ensembles_only=False):
     run = ROOT / 'data/forecasts' / (now().strftime('%Y%m%dT%H%M%S%fZ') + '_' + uuid.uuid4().hex[:6])
     run.mkdir(parents=True)
     manifest = {'started_at_utc': now().isoformat(), 'station': ICAO, 'products': {}, 'errors': {}}
-    for name in ['nws_hourly', 'taf', 'metar']:
+    for name in ([] if ensembles_only else ['nws_hourly', 'taf', 'metar']):
         try:
             if name == 'nws_hourly':
                 p = fetch(POINT_URL, run, 'nws_point')
@@ -87,12 +101,226 @@ def archive_forecasts():
                 manifest['forecast_valid_through'] = table.endTime.iloc[-1]
         except Exception as exc:
             manifest['errors'][name] = str(exc)
+    manifest['ensemble_summaries'] = {}
+    for model in ENSEMBLE_MODELS:
+        name = f'ensemble_{model}'
+        try:
+            summary = collect_ensemble(model, run)
+            manifest['products'][name] = summary['raw_file']
+            manifest['ensemble_summaries'][model] = summary
+            if not summary['usable_future_values']:
+                manifest['errors'][name] = 'No usable future temperatures; raw and parsed data retained'
+        except Exception as exc:
+            manifest['errors'][name] = str(exc)
     manifest['completed_at_utc'] = now().isoformat()
     (run / 'manifest.json').write_text(json.dumps(manifest, indent=2))
+    build_ensemble_archive()
     print(json.dumps({'archive': str(run), **manifest}, indent=2))
     if manifest['errors']:
         raise RuntimeError(f'Partial archive; see {run / "manifest.json"}')
     return run
+
+# Explicit global grids; never best_match or seamless model blending.
+ENSEMBLE_MODELS = {
+    'gfs025': {'label': 'NOAA GEFS 0.25°', 'members': 31, 'days': 10, 'domain': 'ncep_gefs025'},
+    'ecmwf_ifs025': {'label': 'ECMWF IFS 0.25° ENS', 'members': 51, 'days': 15, 'domain': 'ecmwf_ifs025_ensemble'},
+}
+LATITUDE, LONGITUDE = 40.6392, -73.7639
+
+
+def ensemble_url(model):
+    config = ENSEMBLE_MODELS[model]
+    return 'https://ensemble-api.open-meteo.com/v1/ensemble?' + urlencode({
+        'latitude': LATITUDE, 'longitude': LONGITUDE, 'hourly': 'temperature_2m',
+        'models': model, 'forecast_days': config['days'], 'temperature_unit': 'celsius',
+        'timezone': 'GMT', 'timeformat': 'unixtime', 'cell_selection': 'land', 'elevation': 2.7,
+    })
+
+
+def utc_timestamp(value):
+    stamp = pd.Timestamp(value)
+    if pd.isna(stamp) or stamp.tzinfo is None:
+        raise ValueError('Timestamp must include an explicit timezone')
+    return stamp.tz_convert('UTC')
+
+
+def parse_ensemble(data, model, retrieved_at):
+    """Parse every returned temperature member. Keep nulls, reject ambiguous axes.
+
+    The endpoint does not document response-bound initialization metadata. Its
+    generationtime_ms is processing duration, NOT a forecast issue timestamp.
+    """
+    config = ENSEMBLE_MODELS[model]
+    retrieved = utc_timestamp(retrieved_at)
+    if not isinstance(data, dict) or data.get('error'):
+        raise ValueError(f'Invalid ensemble response: {data}')
+    hourly, units = data.get('hourly', {}), data.get('hourly_units', {})
+    times = hourly.get('time')
+    if not isinstance(times, list) or not times:
+        raise ValueError('Missing hourly time axis')
+    if units.get('time') != 'unixtime' or data.get('utc_offset_seconds') != 0:
+        raise ValueError('Expected UTC Unix seconds, not local or ambiguous timestamps')
+    if any(isinstance(t, bool) or not isinstance(t, (int, float)) or not math.isfinite(t) for t in times):
+        raise ValueError('Invalid Unix timestamps')
+    target = pd.to_datetime(times, unit='s', utc=True)
+    if target.has_duplicates or not target.is_monotonic_increasing:
+        raise ValueError('Duplicate or unordered target times')
+    for key, low, high in [('latitude', -90, 90), ('longitude', -180, 180)]:
+        if not isinstance(data.get(key), (int, float)) or not low <= data[key] <= high:
+            raise ValueError(f'Invalid returned {key}')
+    frames, warnings, ids = [], [], set()
+    for key, values in hourly.items():
+        if key == 'time':
+            continue
+        match = re.fullmatch(r'temperature_2m(?:_member(\d+))?', key)
+        if not match:
+            raise ValueError(f'Unexpected hourly field: {key}')
+        member = int(match.group(1) or 0)
+        if member in ids:
+            raise ValueError('Duplicate member identity')
+        ids.add(member)
+        if units.get(key) not in ('°C', '°F'):
+            raise ValueError(f'Unsupported or missing temperature unit for {key}')
+        if not isinstance(values, list) or len(values) != len(times):
+            warnings.append(f'{key}: invalid array length; retained raw, omitted malformed member')
+            continue
+        if any(v is not None and (isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v)) for v in values):
+            warnings.append(f'{key}: invalid numeric values; retained raw, omitted malformed member')
+            continue
+        frames.append(pd.DataFrame({'member_id': member, 'member_role': 'control' if member == 0 else 'perturbed',
+            'source_variable': key, 'target_time_utc': target, 'temperature_2m': values, 'units': units[key]}))
+    if not frames:
+        raise ValueError('No parseable temperature members')
+    table = pd.concat(frames, ignore_index=True)
+    table['temperature_2m'] = pd.to_numeric(table.temperature_2m)
+    table['temperature_c'] = table.temperature_2m.where(table.units == '°C', (table.temperature_2m - 32) / 1.8)
+    table['model'] = model
+    table['station'] = ICAO
+    table['requested_latitude'] = LATITUDE
+    table['requested_longitude'] = LONGITUDE
+    table['requested_elevation_m'] = 2.7
+    table['grid_latitude'] = data['latitude']
+    table['grid_longitude'] = data['longitude']
+    table['response_elevation_m'] = data.get('elevation')
+    table['retrieved_at_utc'] = retrieved.isoformat()
+    table['initialization_time_utc'] = pd.NaT
+    table['initialization_status'] = 'not_provided_in_forecast_response'
+    # Forecast-content identity excludes retrieval time and generationtime_ms.
+    # A changed value, null mask, target axis, member set, or grid is a revision.
+    canonical = {'model': model, 'requested_location': [LATITUDE, LONGITUDE, 2.7],
+                 'grid': [data['latitude'], data['longitude'], data.get('elevation')],
+                 'hourly': hourly, 'hourly_units': units}
+    snapshot = hashlib.sha256(json.dumps(canonical, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()).hexdigest()
+    table['snapshot_id'] = snapshot
+    valid = table[table.temperature_c.notna()]
+    expected_ids = set(range(config['members']))
+    parsed_ids = set(table.member_id)
+    missing = sorted(expected_ids - parsed_ids)
+    if missing:
+        warnings.append(f'Missing/unparseable member IDs: {missing}')
+    if parsed_ids - expected_ids:
+        warnings.append(f'Additional member IDs retained: {sorted(parsed_ids - expected_ids)}')
+    if table.temperature_c.isna().any():
+        warnings.append(f'{int(table.temperature_c.isna().sum())} missing temperature values; no imputation')
+    if len(times) != config['days'] * 24 or (len(times) > 1 and not (pd.Series(times).diff().dropna() == 3600).all()):
+        warnings.append('Returned target axis does not cover the requested consecutive hourly window')
+    summary = {'snapshot_id': snapshot, 'model': model, 'retrieved_at_utc': retrieved.isoformat(),
+        'expected_members': config['members'], 'returned_members': len(ids), 'parsed_members': len(parsed_ids),
+        'members_with_data': int(valid.member_id.nunique()), 'control_present': 0 in parsed_ids,
+        'requested_days': config['days'], 'target_hours': len(times), 'rows': len(table),
+        'missing_values': int(table.temperature_c.isna().sum()), 'missing_member_ids': missing,
+        'target_start_utc': target.min().isoformat(), 'target_end_utc': target.max().isoformat(),
+        'valid_start_utc': valid.target_time_utc.min().isoformat() if len(valid) else None,
+        'valid_end_utc': valid.target_time_utc.max().isoformat() if len(valid) else None,
+        'complete_requested_window': not warnings, 'warnings': warnings}
+    return table, summary
+
+
+def collect_ensemble(model, run):
+    """Metadata is advisory only: separate servers cannot prove response run ID."""
+    run = Path(run)
+    config = ENSEMBLE_MODELS[model]
+    metadata_url = f'https://ensemble-api.open-meteo.com/data/{config["domain"]}/static/meta.json'
+    metadata, notes = {}, []
+    for phase in ('before', 'after'):
+        if phase == 'after':
+            forecast_path = fetch(ensemble_url(model), run, f'ensemble_{model}')
+            receipt = json.loads(forecast_path.with_suffix('.json.meta.json').read_text())['retrieved_at_utc']
+            table, summary = parse_ensemble(json.loads(forecast_path.read_text()), model, receipt)
+        try:
+            path = fetch(metadata_url, run, f'model_metadata_{model}_{phase}')
+            parsed_metadata = json.loads(path.read_text())
+            if not isinstance(parsed_metadata, dict) or parsed_metadata.get('error'):
+                raise ValueError('Invalid publication metadata')
+            metadata[phase] = parsed_metadata
+        except Exception as exc:
+            notes.append(f'Model metadata {phase} unavailable: {exc}')
+    summary['raw_file'] = forecast_path.name
+    summary['metadata_before'] = metadata.get('before')
+    summary['metadata_after'] = metadata.get('after')
+    advisory = metadata.get('after', {})
+    for field in ('last_run_initialisation_time', 'last_run_availability_time'):
+        value = advisory.get(field)
+        if isinstance(value, (int, float)):
+            summary[f'advisory_{field}_utc'] = pd.to_datetime(value, unit='s', utc=True).isoformat()
+    if metadata.get('before') != metadata.get('after'):
+        notes.append('Publication metadata changed during retrieval; run identity unverified')
+    available = advisory.get('last_run_availability_time')
+    if isinstance(available, (int, float)):
+        age = utc_timestamp(receipt).timestamp() - available
+        if age < 600:
+            notes.append('Within publication/replication window; collect again next run (10-minute provider buffer)')
+        elif age > 2 * advisory.get('update_interval_seconds', 21600) + 600:
+            notes.append('Model availability metadata more than two update intervals old')
+    else:
+        notes.append('Publication readiness unavailable; run identity unverified')
+    summary['warnings'].extend(notes)
+    summary['initialization_status'] = 'not_provided_in_forecast_response; separate metadata is advisory'
+    table['advisory_initialization_time_utc'] = summary.get('advisory_last_run_initialisation_time_utc')
+    table['advisory_availability_time_utc'] = summary.get('advisory_last_run_availability_time_utc')
+    table['raw_file'] = str(forecast_path.relative_to(ROOT)) if forecast_path.is_relative_to(ROOT) else str(forecast_path)
+    # Avoid confusing advisory metadata with a verified initialization on rows.
+    table.to_csv(run / f'ensemble_{model}.csv', index=False)
+    summary['usable_future_values'] = int(((table.target_time_utc > utc_timestamp(receipt)) & table.temperature_c.notna()).sum())
+    (run / f'ensemble_{model}_summary.json').write_text(json.dumps(summary, indent=2))
+    return summary
+
+
+def build_ensemble_archive(root=None, output=None):
+    """Offline deterministic rebuild; one row per distinct snapshot/member/target.
+
+    All retrieval receipts are retained separately, including identical polls.
+    Changed snapshots are never overwritten or mixed in quantile calculations.
+    """
+    root = Path(root) if root else ROOT / 'data/forecasts'
+    output = Path(output) if output else OUT
+    output.mkdir(parents=True, exist_ok=True)
+    frames, summaries = [], []
+    for path in sorted(root.glob('*/ensemble_*_summary.json')):
+        summary = json.loads(path.read_text())
+        table_path = path.parent / f'ensemble_{summary["model"]}.csv'
+        frame = pd.read_csv(table_path)
+        frame['advisory_initialization_time_utc'] = summary.get('advisory_last_run_initialisation_time_utc')
+        frame['advisory_availability_time_utc'] = summary.get('advisory_last_run_availability_time_utc')
+        if frame.duplicated(['snapshot_id', 'member_id', 'target_time_utc']).any():
+            raise ValueError(f'Duplicate member/target in {table_path}')
+        frames.append(frame)
+        summaries.append({**summary, 'archive_run': path.parent.name})
+    if not frames:
+        return pd.DataFrame(), pd.DataFrame()
+    all_rows = pd.concat(frames, ignore_index=True).sort_values('retrieved_at_utc')
+    receipts = pd.DataFrame(summaries).sort_values('retrieved_at_utc')
+    coverage = receipts.copy()
+    for field in ('metadata_before', 'metadata_after', 'warnings', 'missing_member_ids'):
+        if field in coverage:
+            coverage[field] = coverage[field].apply(json.dumps)
+    coverage.to_csv(output / 'ensemble_coverage.csv', index=False)
+    observations = receipts.groupby('snapshot_id').agg(first_retrieved_at_utc=('retrieved_at_utc', 'min'),
+        last_retrieved_at_utc=('retrieved_at_utc', 'max'), retrieval_count=('retrieved_at_utc', 'size'))
+    table = all_rows.drop_duplicates(['snapshot_id', 'member_id', 'target_time_utc'], keep='first').merge(observations, on='snapshot_id', validate='many_to_one')
+    table.to_csv(output / 'ensemble_temperature.csv', index=False)
+    return table, receipts
+
 
 def degree_days(frame):
     f = frame.copy()
@@ -172,6 +400,7 @@ def monthly(daily):
 
 def build():
     OUT.mkdir(parents=True, exist_ok=True)
+    build_ensemble_archive()
     files = sorted((RAW / 'ghcn').glob('*.dly'))
     if not files:
         raise FileNotFoundError('Run refresh first')
@@ -190,10 +419,10 @@ def build():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('action', choices=['refresh', 'archive', 'build', 'all'])
+    parser.add_argument('action', choices=['refresh', 'archive', 'ensembles', 'build', 'all'])
     args = parser.parse_args()
-    if args.action in ('archive', 'all'):
-        archive_forecasts()
+    if args.action in ('archive', 'ensembles', 'all'):
+        archive_forecasts(ensembles_only=args.action == 'ensembles')
     if args.action in ('refresh', 'all'):
         print(refresh_observations())
     if args.action in ('build', 'all'):

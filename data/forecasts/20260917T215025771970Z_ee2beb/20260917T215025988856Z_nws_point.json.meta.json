@@ -1,0 +1,25 @@
+{
+  "retrieved_at_utc": "2026-09-17T21:50:25.989728+00:00",
+  "url": "https://api.weather.gov/points/40.6392,-73.7639",
+  "status": 200,
+  "sha256": "0e612c23678c7c42ef260b5642b96e437ace024810ab594f6ab2b3d7bf291b69",
+  "headers": {
+    "Server": "nginx/1.28.3",
+    "Content-Type": "application/geo+json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Expose-Headers": "X-Correlation-Id, X-Request-Id, X-Server-Id",
+    "X-Request-ID": "01a0b131-2f4d-7533-9b3b-8043f003debb",
+    "X-Correlation-ID": "f3a6997",
+    "X-Server-ID": "vm-cprk-api-ops-app15.ncep.noaa.gov",
+    "Server-Timing": "dtTrId;desc=\"f9d5557ff325f1de2de66154f380f37d\", dtSInfo;desc=\"0\"",
+    "Content-Encoding": "gzip",
+    "Content-Length": "1006",
+    "Cache-Control": "public, max-age=83759, s-maxage=120",
+    "Expires": "Fri, 18 Sep 2026 21:06:25 GMT",
+    "Date": "Thu, 17 Sep 2026 21:50:26 GMT",
+    "Connection": "keep-alive",
+    "Vary": "Accept-Encoding, Accept,Feature-Flags,Accept-Language",
+    "X-Edge-Request-ID": "5e6360b",
+    "Strict-Transport-Security": "max-age=31536000 ; includeSubDomains ; preload"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "retrieved_at_utc": "2026-09-17T21:50:30.924296+00:00",
+  "url": "https://ensemble-api.open-meteo.com/data/ecmwf_ifs025_ensemble/static/meta.json",
+  "status": 200,
+  "sha256": "6ba4a2d84ccc6a168fb32b9ec097cb7c0bbd9040cbe1691d67458c89e782b910",
+  "headers": {
+    "Date": "Thu, 17 Sep 2026 21:50:30 GMT",
+    "Content-Type": "application/json; charset=utf-8",
+    "Transfer-Encoding": "chunked",
+    "Connection": "keep-alive",
+    "last-modified": "Thu, 17 Sep 2026 15:10:18 GMT",
+    "etag": "\"1789657818-596\"",
+    "Content-Encoding": "deflate"
+  }
+}

@@ -80,6 +80,57 @@ latest = sorted((w.ROOT / 'data/forecasts').glob('*/nws_hourly.csv'))[-1]
 forecast = pd.read_csv(latest)
 display(forecast[['startTime', 'endTime', 'temperature', 'temperatureUnit', 'update_time_utc', 'lead_hours_at_retrieval']].head(12))
 print('Latest forecast archive:', latest.parent)'''),
+md('''## 6. GEFS and ECMWF ensemble archive
+Explicit Open-Meteo models: `gfs025` (31 members, requested 10 days) and `ecmwf_ifs025` (51 members, requested 15 days). The unsuffixed temperature variable is retained as control member 0. We request 2-meter temperatures in °C at JFK, with 2.7 m elevation and land grid selection; requested and returned grid coordinates are both retained.
+
+All returned members and null values are preserved. Hourly API values can be interpolated from 3/6-hour model output. Every six hours we retrieve available data; this collection interval does not guarantee one snapshot of each model initialization. Both products are documented to update every six hours, with publication delays. Metadata is saved before and after the forecast request. An update younger than 10 minutes is flagged for possible server replication delay; another collection can be run later.
+
+Forecast responses do not supply a verifiable initialization timestamp. `initialization_time_utc` remains null. Separate model metadata initialization/availability times are **advisory**, not assigned to every forecast target. `generationtime_ms` measures API computation time, not model initialization. These are retrieval snapshots, potentially containing data from successive runs, not guaranteed single-run hindcasts. Individual-member retention is only up to three past days; this does not reconstruct missed historical vintages.
+
+Identical forecast-content snapshots share a content hash; the analysis table has one row per snapshot/member/target. All retrieval receipts and raw responses remain archived. Any changed temperature, null mask, member set, time axis, or grid creates a new snapshot. Matching individual values across distinct snapshots are deliberately retained.'''),
+code('''ensemble, coverage = w.build_ensemble_archive()
+if coverage.empty:
+    print('No ensemble archive yet. Run: .venv/bin/python weather_pipeline.py ensembles')
+else:
+    display(coverage[['model', 'retrieved_at_utc', 'snapshot_id', 'expected_members', 'parsed_members',
+                      'members_with_data', 'control_present', 'target_hours', 'missing_values',
+                      'complete_requested_window', 'valid_start_utc', 'valid_end_utc', 'warnings']])
+    print('Distinct snapshots:', ensemble.snapshot_id.nunique(), '| Unique member-target rows:', len(ensemble))
+    print('Verified initialization timestamps:', ensemble.initialization_time_utc.notna().sum())
+    display(ensemble[['model', 'member_id', 'member_role', 'requested_latitude', 'requested_longitude',
+                      'grid_latitude', 'grid_longitude', 'units', 'target_time_utc', 'temperature_2m',
+                      'retrieved_at_utc', 'initialization_time_utc', 'advisory_initialization_time_utc']].head())'''),
+code('''if not coverage.empty:
+    latest = coverage.sort_values('retrieved_at_utc').groupby('model', as_index=False).tail(1)
+    fig, axes = plt.subplots(len(latest), 1, figsize=(12, 7), squeeze=False, constrained_layout=True)
+    member_coverage = []
+    for ax, (_, receipt) in zip(axes.flat, latest.iterrows()):
+        f = ensemble[ensemble.snapshot_id == receipt.snapshot_id].copy()
+        f['target_time_utc'] = pd.to_datetime(f.target_time_utc, utc=True)
+        # Plot future targets relative to this retrieval, not an invented run time.
+        f = f[f.target_time_utc >= pd.Timestamp(receipt.retrieved_at_utc)]
+        wide = f.pivot(index='target_time_utc', columns='member_id', values='temperature_c')
+        counts = wide.count(axis=1)
+        enough = counts == int(receipt.expected_members)
+        median = wide.median(axis=1).where(enough)
+        lower = wide.quantile(0.1, axis=1).where(enough)
+        upper = wide.quantile(0.9, axis=1).where(enough)
+        ax.plot(wide.index, wide.values, color='#718096', alpha=0.12, lw=0.5)
+        ax.fill_between(wide.index, lower.to_numpy(), upper.to_numpy(), color='#3182ce', alpha=0.25, label='10th–90th percentile model spread')
+        ax.plot(wide.index, median, color='#125478', lw=1.8, label='Ensemble median')
+        ax.set(title=f"{receipt.model} • {receipt.parsed_members} members • retrieved {receipt.retrieved_at_utc[:16]} UTC", ylabel='2 m temperature (°C)', xlabel='Target time (UTC)')
+        ax.legend(fontsize=8)
+        member_coverage.append({'model':receipt.model, 'future_target_hours':len(wide),
+                               'min_available_members':int(counts.min()) if len(counts) else 0,
+                               'hours_with_all_expected_members':int(enough.sum()),
+                               'missing_values_in_future_window':int(wide.isna().sum().sum())})
+    display(pd.DataFrame(member_coverage))
+    plt.show()'''),
+md('''The shaded 10th–90th percentile band describes **model spread**, not an automatically calibrated confidence interval. Median/band values are omitted where any expected member is missing. Each panel uses one retrieval snapshot; models and revisions are not pooled. Shared model biases and coastal grid/elevation effects can remain even when spread is narrow.
+
+This stage does not calculate forecast monthly HDD/CDD or derivative prices. A 10- or 15-day forecast window is not a complete calendar month; the historical completeness rules remain unchanged.
+
+Sources: [Open-Meteo Ensemble API](https://open-meteo.com/en/docs/ensemble-api), [publication metadata](https://open-meteo.com/en/docs/model-updates), [control-member convention](https://github.com/open-meteo/open-meteo/discussions/366). Temperature data: NOAA GEFS and ECMWF IFS via Open-Meteo, CC BY 4.0; converted here to long-format tables and empirical member quantiles.'''),
 md('''## Outputs and references
 Daily and monthly tables, retained observations, quality audit, and source comparison are in `data/processed/`. Immutable source responses are in `data/raw/`; forecast snapshots are in `data/forecasts/`.
 
