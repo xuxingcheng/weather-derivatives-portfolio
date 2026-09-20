@@ -1,0 +1,20 @@
+{
+  "retrieved_at_utc": "2026-09-20T03:30:52.161805+00:00",
+  "url": "https://www.ncei.noaa.gov/pub/data/ghcn/daily/all/USW00094789.dly",
+  "status": 200,
+  "sha256": "6eeab7003dc78cb5266923f6972c346b67f07fb79047c7ad0aac2750f54fa703",
+  "headers": {
+    "Date": "Sun, 20 Sep 2026 03:30:47 GMT",
+    "Server": "Apache",
+    "Strict-Transport-Security": "max-age=31536000",
+    "Last-Modified": "Sat, 19 Sep 2026 10:42:48 GMT",
+    "ETag": "\"40be6a-65bd3ad8daf0c\"",
+    "Accept-Ranges": "bytes",
+    "Content-Length": "4243050",
+    "Content-Type": "text/plain",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Headers": "X-Requested-With, Content-Type",
+    "Keep-Alive": "timeout=3, max=100",
+    "Connection": "Keep-Alive"
+  }
+}

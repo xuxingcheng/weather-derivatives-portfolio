@@ -1,0 +1,147 @@
+[
+  {
+    "started_at_utc": "2026-09-20T02:55:28.000Z",
+    "completed_at_utc": "2026-09-20T02:56:10.000Z",
+    "commands": [
+      {
+        "command": "/bin/zsh -lc '.venv/bin/python weather_pipeline.py archive'",
+        "exit_code": 0
+      },
+      {
+        "command": "/bin/zsh -lc '.venv/bin/python weather_pipeline.py build'",
+        "exit_code": 0
+      }
+    ],
+    "matching_local_collections": [
+      {
+        "manifest": "data/forecasts/20260920T025537221796Z_b61580/manifest.json",
+        "collection_started_at_utc": "2026-09-20T02:55:37.221997+00:00",
+        "successful_products": [
+          "nws_hourly",
+          "taf",
+          "metar",
+          "ensemble_gfs025",
+          "ensemble_ecmwf_ifs025"
+        ],
+        "errors": {},
+        "present_in_local_HEAD_at_inspection": true
+      }
+    ]
+  },
+  {
+    "started_at_utc": "2026-09-19T17:50:02.000Z",
+    "completed_at_utc": "2026-09-20T02:55:12.000Z",
+    "commands": [
+      {
+        "command": "/bin/zsh -lc '.venv/bin/python weather_pipeline.py archive'",
+        "exit_code": 0
+      },
+      {
+        "command": "/bin/zsh -lc '.venv/bin/python weather_pipeline.py build'",
+        "exit_code": 0
+      }
+    ],
+    "matching_local_collections": [
+      {
+        "manifest": "data/forecasts/20260920T024212337343Z_c21f9a/manifest.json",
+        "collection_started_at_utc": "2026-09-20T02:42:12.337646+00:00",
+        "successful_products": [
+          "nws_hourly",
+          "taf",
+          "metar",
+          "ensemble_gfs025",
+          "ensemble_ecmwf_ifs025"
+        ],
+        "errors": {},
+        "present_in_local_HEAD_at_inspection": true
+      }
+    ]
+  },
+  {
+    "started_at_utc": "2026-09-19T08:53:41.000Z",
+    "completed_at_utc": "2026-09-19T17:33:44.000Z",
+    "commands": [
+      {
+        "command": "/bin/zsh -lc '.venv/bin/python weather_pipeline.py archive'",
+        "exit_code": 0
+      },
+      {
+        "command": "/bin/zsh -lc '.venv/bin/python weather_pipeline.py build'",
+        "exit_code": 0
+      }
+    ],
+    "matching_local_collections": [
+      {
+        "manifest": "data/forecasts/20260919T132216470149Z_e9db1b/manifest.json",
+        "collection_started_at_utc": "2026-09-19T13:22:16.470445+00:00",
+        "successful_products": [
+          "nws_hourly",
+          "taf",
+          "metar",
+          "ensemble_gfs025",
+          "ensemble_ecmwf_ifs025"
+        ],
+        "errors": {},
+        "present_in_local_HEAD_at_inspection": true
+      }
+    ]
+  },
+  {
+    "started_at_utc": "2026-09-19T02:38:51.000Z",
+    "completed_at_utc": "2026-09-19T02:39:27.000Z",
+    "commands": [
+      {
+        "command": "/bin/zsh -lc '.venv/bin/python weather_pipeline.py archive'",
+        "exit_code": 0
+      },
+      {
+        "command": "/bin/zsh -lc '.venv/bin/python weather_pipeline.py build'",
+        "exit_code": 0
+      }
+    ],
+    "matching_local_collections": [
+      {
+        "manifest": "data/forecasts/20260919T023859714449Z_7e19a1/manifest.json",
+        "collection_started_at_utc": "2026-09-19T02:38:59.714635+00:00",
+        "successful_products": [
+          "nws_hourly",
+          "taf",
+          "metar",
+          "ensemble_gfs025",
+          "ensemble_ecmwf_ifs025"
+        ],
+        "errors": {},
+        "present_in_local_HEAD_at_inspection": true
+      }
+    ]
+  },
+  {
+    "started_at_utc": "2026-09-18T03:17:52.000Z",
+    "completed_at_utc": "2026-09-19T02:38:04.000Z",
+    "commands": [
+      {
+        "command": "/bin/zsh -lc '.venv/bin/python weather_pipeline.py archive'",
+        "exit_code": 0
+      },
+      {
+        "command": "/bin/zsh -lc '.venv/bin/python weather_pipeline.py build'",
+        "exit_code": 0
+      }
+    ],
+    "matching_local_collections": [
+      {
+        "manifest": "data/forecasts/20260919T023740295447Z_d209f9/manifest.json",
+        "collection_started_at_utc": "2026-09-19T02:37:40.295766+00:00",
+        "successful_products": [
+          "nws_hourly",
+          "taf",
+          "metar",
+          "ensemble_gfs025",
+          "ensemble_ecmwf_ifs025"
+        ],
+        "errors": {},
+        "present_in_local_HEAD_at_inspection": true
+      }
+    ]
+  }
+]

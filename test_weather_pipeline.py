@@ -1,10 +1,24 @@
 import calendar
+import hashlib
+from unittest.mock import patch, Mock
 import json
 from pathlib import Path
 import tempfile
 import unittest
 import pandas as pd
 import weather_pipeline as w
+
+def receipt(path, timestamp='2026-09-17T21:00:00Z', status=200):
+    path.with_suffix(path.suffix + '.meta.json').write_text(json.dumps({
+        'retrieved_at_utc': timestamp, 'status': status, 'url': 'https://test',
+        'sha256': hashlib.sha256(path.read_bytes()).hexdigest(), 'headers': {}}))
+    return path
+
+
+def ghcn_payload(value=200):
+    return '\n'.join(f'{w.GHCN_ID}202402{element}' + ''.join(f'{(v if day <= 29 else -9999):5d}  0' for day in range(1,32))
+                     for element,v in [('TMIN',100), ('TMAX',value)])
+
 
 class WeatherTests(unittest.TestCase):
     def test_degree_days_and_incomplete_month(self):
@@ -127,6 +141,10 @@ class EnsembleTests(unittest.TestCase):
             for i,(frame,summary) in enumerate([(first,s1),(repeated,s2),(revised,s3)]):
                 run=root/str(i);run.mkdir(parents=True)
                 frame.to_csv(run/'ensemble_gfs025.csv',index=False)
+                raw = run/'raw_ensemble_gfs025.json'
+                raw.write_text(json.dumps(changed if i==2 else d))
+                receipt(raw, summary['retrieved_at_utc'])
+                summary['raw_file'] = raw.name
                 (run/'ensemble_gfs025_summary.json').write_text(json.dumps(summary))
             table,receipts=w.build_ensemble_archive(root,out)
             self.assertEqual(len(receipts),3)
@@ -147,25 +165,26 @@ class EnsembleTests(unittest.TestCase):
             self.assertEqual(summary['parsed_members'],31)
             self.assertGreater(summary['usable_future_values'],0)
             self.assertTrue(any('metadata before unavailable' in s for s in summary['warnings']))
-            self.assertTrue((Path(tmp)/'ensemble_gfs025.csv').exists())
+            self.assertTrue((Path(tmp)/'ensemble_gfs025_summary.json').exists())
 
     def test_source_failure_does_not_stop_other_sources(self):
         from unittest.mock import patch
         def fake_fetch(url, directory, stem, extension='json'):
-            if stem=='nws_point': payload={'properties':{'forecastHourly':'https://test/forecast'}}
+            if stem==w.GHCN_ID: raise RuntimeError('GHCN outage')
+            if stem=='nws_point': payload={'properties':{'forecastHourly':'https://api.weather.gov/test/forecast'}}
             elif stem=='nws_hourly':payload={'properties':{'periods':[{'startTime':'2026-09-18T00:00:00Z','endTime':'2026-09-18T01:00:00Z','temperature':60}]}}
             elif stem=='taf':raise RuntimeError('TAF outage')
-            else:payload=[{'icaoId':'KJFK'}]
-            p=directory/f'raw_{stem}.json';p.write_text(json.dumps(payload));return p
+            else:payload=[{'icaoId':'KJFK', 'obsTime':1789678260, 'receiptTime':'2026-09-17T20:54:00Z', 'temp':25}]
+            p=directory/f'raw_{stem}.json';p.write_text(json.dumps(payload));receipt(p);return p
         def fake_ensemble(model,run):
             if model=='gfs025':raise RuntimeError('GEFS outage')
             p=run/'ecmwf.json';p.write_text('{}')
             return {'raw_file':p.name,'usable_future_values':10}
-        with tempfile.TemporaryDirectory() as tmp, patch.object(w,'ROOT',Path(tmp)), patch.object(w,'fetch',side_effect=fake_fetch), patch.object(w,'collect_ensemble',side_effect=fake_ensemble), patch.object(w,'build_ensemble_archive'):
+        with tempfile.TemporaryDirectory() as tmp, patch.object(w,'ROOT',Path(tmp)), patch.object(w,'ghcn_due',return_value=True), patch.object(w,'fetch',side_effect=fake_fetch), patch.object(w,'collect_ensemble',side_effect=fake_ensemble), patch.object(w,'build_ensemble_archive'):
             with self.assertRaises(RuntimeError): w.archive_forecasts()
             manifest=json.loads(next(Path(tmp).glob('data/forecasts/*/manifest.json')).read_text())
-            self.assertEqual(set(manifest['errors']),{'taf','ensemble_gfs025'})
-            self.assertEqual(set(manifest['products']),{'nws_hourly','metar','ensemble_ecmwf_ifs025'})
+            self.assertEqual(set(manifest['errors']),{'ghcn','taf','ensemble_gfs025'})
+            self.assertEqual(set(manifest['products']),{'nws_point','nws_hourly','metar','ensemble_ecmwf_ifs025'})
 
     def test_additional_member_retained_and_missing_control_flagged(self):
         data=self.fixture()
@@ -201,7 +220,7 @@ class EnsembleTests(unittest.TestCase):
                 summary=json.loads((run/f'ensemble_{model}_summary.json').read_text())
                 self.assertEqual(summary['usable_future_values'],0)
                 self.assertTrue(any('replication window' in x for x in summary['warnings']))
-                self.assertTrue((run/f'ensemble_{model}.csv').exists())
+                self.assertTrue((run/f'raw_ensemble_{model}.json').exists())
 
     def test_http_failure_retains_body_and_retries(self):
         from unittest.mock import patch,Mock

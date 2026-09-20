@@ -1,0 +1,11 @@
+{
+  "id": "archive-jfk-weather-forecasts",
+  "name": "Archive JFK weather forecasts",
+  "status": "ACTIVE",
+  "rrule": "FREQ=HOURLY;INTERVAL=6",
+  "kind": "heartbeat",
+  "target_thread_id": "01a0b125-44e9-7a22-93cd-eb3fd675c347",
+  "last_run_at": "2026-09-20T02:55:28.460000+00:00",
+  "next_run_at": "2026-09-20T08:55:26+00:00",
+  "updated_at": "2026-09-20T03:30:16.482000+00:00"
+}

@@ -1,0 +1,48 @@
+{
+  "snapshot_id": "4438723bcd290da56f1bf6e7689bca26014c0d9d186bfcbfaba076f664bf3183",
+  "model": "ecmwf_ifs025",
+  "retrieved_at_utc": "2026-09-20T03:30:56.730393+00:00",
+  "expected_members": 51,
+  "returned_members": 51,
+  "parsed_members": 51,
+  "members_with_data": 51,
+  "control_present": true,
+  "requested_days": 15,
+  "target_hours": 360,
+  "rows": 18360,
+  "missing_values": 459,
+  "missing_member_ids": [],
+  "target_start_utc": "2026-09-20T00:00:00+00:00",
+  "target_end_utc": "2026-10-04T23:00:00+00:00",
+  "valid_start_utc": "2026-09-20T00:00:00+00:00",
+  "valid_end_utc": "2026-10-04T14:00:00+00:00",
+  "complete_requested_window": false,
+  "warnings": [
+    "459 missing temperature values; no imputation"
+  ],
+  "raw_file": "20260920T033056730045Z_27401d_ensemble_ecmwf_ifs025.json",
+  "metadata_before": {
+    "chunk_time_length": 104,
+    "crs_wkt": "GEOGCRS[\"WGS 84\",\n    DATUM[\"World Geodetic System 1984\",\n        ELLIPSOID[\"WGS 84\",6378137,298.257223563]],\n    CS[ellipsoidal,2],\n        AXIS[\"latitude\",north],\n        AXIS[\"longitude\",east],\n        ANGLEUNIT[\"degree\",0.0174532925199433]\n    USAGE[\n        SCOPE[\"grid\"],\n        BBOX[-90.0,-180.0,90.0,179.75]]]",
+    "data_end_time": 1790370000,
+    "last_run_availability_time": 1789872483,
+    "last_run_initialisation_time": 1789840800,
+    "last_run_modification_time": 1789872483,
+    "temporal_resolution_seconds": 10800,
+    "update_interval_seconds": 21600
+  },
+  "metadata_after": {
+    "chunk_time_length": 104,
+    "crs_wkt": "GEOGCRS[\"WGS 84\",\n    DATUM[\"World Geodetic System 1984\",\n        ELLIPSOID[\"WGS 84\",6378137,298.257223563]],\n    CS[ellipsoidal,2],\n        AXIS[\"latitude\",north],\n        AXIS[\"longitude\",east],\n        ANGLEUNIT[\"degree\",0.0174532925199433]\n    USAGE[\n        SCOPE[\"grid\"],\n        BBOX[-90.0,-180.0,90.0,179.75]]]",
+    "data_end_time": 1790370000,
+    "last_run_availability_time": 1789872483,
+    "last_run_initialisation_time": 1789840800,
+    "last_run_modification_time": 1789872483,
+    "temporal_resolution_seconds": 10800,
+    "update_interval_seconds": 21600
+  },
+  "advisory_last_run_initialisation_time_utc": "2026-09-19T18:00:00+00:00",
+  "advisory_last_run_availability_time_utc": "2026-09-20T02:48:03+00:00",
+  "initialization_status": "not_provided_in_forecast_response; separate metadata is advisory",
+  "usable_future_values": 17697
+}

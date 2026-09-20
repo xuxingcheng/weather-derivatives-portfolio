@@ -1,0 +1,7 @@
+{
+  "attempted_at_utc": "2026-09-20T03:30:03.477656+00:00",
+  "url": "https://www.ncei.noaa.gov/pub/data/ghcn/daily/all/USW00094789.dly",
+  "candidate": "/Users/stevenxu/Documents/ChatGPT/Weather Derivative/data/raw/ghcn/20260920T033003475939Z_d8282d_USW00094789.dly",
+  "error": "HTTPSConnectionPool(host='www.ncei.noaa.gov', port=443): Max retries exceeded with url: /pub/data/ghcn/daily/all/USW00094789.dly (Caused by NameResolutionError(\"HTTPSConnection(host='www.ncei.noaa.gov', port=443): Failed to resolve 'www.ncei.noaa.gov' ([Errno 8] nodename nor servname provided, or not known)\"))",
+  "attempt": 2
+}

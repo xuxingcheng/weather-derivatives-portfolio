@@ -1,0 +1,7 @@
+{
+  "attempted_at_utc": "2026-09-20T03:30:05.491443+00:00",
+  "url": "https://api.weather.gov/points/40.6392,-73.7639",
+  "candidate": "/Users/stevenxu/Documents/ChatGPT/Weather Derivative/data/forecasts/20260920T033002253914Z_f86d0d/20260920T033005488932Z_c1c0cb_nws_point.json",
+  "error": "HTTPSConnectionPool(host='api.weather.gov', port=443): Max retries exceeded with url: /points/40.6392,-73.7639 (Caused by NameResolutionError(\"HTTPSConnection(host='api.weather.gov', port=443): Failed to resolve 'api.weather.gov' ([Errno 8] nodename nor servname provided, or not known)\"))",
+  "attempt": 1
+}

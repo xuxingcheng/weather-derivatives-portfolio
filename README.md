@@ -1,111 +1,108 @@
 # JFK temperature history and forecast archive
 
-Open **jfk_temperature_history.ipynb** with this project's `.venv/bin/python` kernel. The notebook has been executed and contains tables and charts. Default reruns are offline, reading the preserved downloads.
-
-## Results at initialization (2026-09-17)
-
-- NOAA GHCN-Daily `USW00094789`, JFK International Airport: 9,755 accepted days from 2000-01-01 through 2026-09-15. The calendar includes 2026-09-16 as missing, with no interpolation.
-- 320 complete monthly HDD/CDD totals at a 65°F base. September 2026 is partial and its full-month totals are blank.
-- NOAA Aviation Weather `KJFK`: downloaded the available 30-day window; 27 complete local days, with 26 accepted dates overlapping GHCN. The direct API cannot provide a comparable history back to 2000.
-- First forecast archive saved at 2026-09-17 21:00 UTC. A second snapshot at 21:06 UTC uses NOAA's verified station coordinates (40.6392, -73.7639); the initial snapshot used a nearby JFK point (40.6398, -73.7789). Each snapshot retains its point lookup for provenance.
-- Codex automation `archive-jfk-weather-forecasts` is active every six hours. It archives NWS hourly forecasts, KJFK TAF, and recent METAR observations, then rebuilds processed CSVs. The local host must be available; this is not an always-on remote service. Routine successes are quiet; failures require attention.
+Open `jfk_temperature_history.ipynb` with the project's `.venv/bin/python` kernel. Default execution is offline. JFK (`USW00094789` / `KJFK`), the **2000-01-01** historical start and **65°F** degree-day base are unchanged. This project collects observations and forecast vintages; this change adds no pricing or forecast evaluation.
 
 ## Commands
 
 ```sh
 python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
-.venv/bin/python weather_pipeline.py all       # archive, download, process
-.venv/bin/python weather_pipeline.py archive   # new forecast + recent METAR snapshot
-.venv/bin/python weather_pipeline.py refresh   # refresh GHCN + recent METAR window
-.venv/bin/python weather_pipeline.py build     # rebuild CSVs offline
-.venv/bin/python execute_notebook.py           # execute and save notebook outputs
-.venv/bin/python -m unittest -v test_weather_pipeline.py
+.venv/bin/python weather_pipeline.py archive --grace-hours 2
+.venv/bin/python weather_pipeline.py refresh
+.venv/bin/python weather_pipeline.py ensembles
+.venv/bin/python weather_pipeline.py all
+.venv/bin/python weather_pipeline.py build
+.venv/bin/python weather_pipeline.py health --grace-hours 2
+.venv/bin/python -m unittest -v test_weather_pipeline test_collection
+.venv/bin/python execute_notebook.py
 ```
 
-`requirements-lock.txt` records the tested environment. Select `.venv/bin/python` explicitly in the notebook editor. `make_notebook.py` regenerates the notebook structure and clears its outputs; use only when changing the template, then execute it again.
+- `archive`: collect NWS point lookup, NWS hourly, TAF, the last 48 hours of METAR, GEFS and ECMWF. Also fetch the full GHCN station file at the first poll when the latest **validated successful** retrieval is at least 24 hours old, or none exists. A failed GHCN refresh remains due at the next poll. Every download has a new immutable filename.
+- `refresh`: force GHCN and six independent five-day METAR requests spanning the API's recent 30-day window. Overlapping requests preserve corrections and original receipts.
+- `ensembles`: collect just GEFS and ECMWF, including separate before/after publication metadata.
+- `all`: force the observation refresh, then run the archive workflow. A successful GHCN refresh satisfies that archive's daily gate.
+- All four collection commands attempt an offline rebuild **even after partial collection failure**, then exit nonzero if collection/build failed. Each source is attempted independently. Successful raw responses and processed outputs survive other sources' failures.
+- `build`: no network requests. Rebuild observation tables and ensemble Parquet from retained raw responses and legacy per-run tables; reparse the entire selected GHCN snapshot, including recent and older revised dates. It also writes selection, migration-check and health reports.
+- `health`: recompute status from local receipts/manifests. `--grace-hours` (default 2; also `WEATHER_GRACE_HOURS`) flags no recorded attempt or no successful retrieval after **24 + grace** hours for GHCN and **6 + grace** hours for other products. Health status is reported as data; `health` itself does not fail merely because a source is stale.
 
-## Definitions and limitations
+`requirements-lock.txt` records the tested environment, including PyArrow. `make_notebook.py` regenerates the notebook and clears outputs; execute the notebook again after changing its template. Notebook network switches default to false and catch partial collection failures so offline processing can continue.
 
-GHCN: reject missing sentinel values and nonblank quality flags, preserve source and measurement flags, reject reversed extrema, and compute daily mean as `(TMAX + TMIN)/2`. GHCN dates follow the source's observing-day convention. Recent records may lag or be revised.
+## Validated selection and observation provenance
 
-METAR: latest receipt wins for duplicate observation timestamps; retain QC fields and raw reports. Screen numeric temperature to −60…55°C, average observations within UTC hourly bins, assign America/New_York dates, and require every local hour plus a completed day. Daily mean is the midpoint of sampled hourly extrema. The sampled hourly mean is also exported. This plausibility/completeness screen is not equivalent to GHCN climate QC, and sampled extremes may differ from actual daily extrema. Do not splice the two series silently.
+A raw file is eligible only with a readable HTTP metadata receipt, a 2xx status, explicit UTC retrieval timestamp, matching SHA-256, and valid source structure. HTTP errors, transport errors, HTML/error payloads, wrong stations, malformed fixed-width GHCN records, missing extrema and malformed METAR arrays are excluded. Original bytes and error records remain available for diagnosis. HTTP failures retry up to three times, except nonretryable 4xx and long Retry-After requests; an HTTP 200 structural failure is retained and reported, then retried on the next collection.
 
-HDD65 = max(65 − daily mean °F, 0); CDD65 = max(daily mean °F − 65, 0). Monthly totals require all calendar days. Available-day sums are labeled partial; missing days are not replaced by zero. Units are °F-days.
+GHCN selection is by **receipt timestamp**, not filename. The latest valid complete-format station snapshot wins; if a newer downloaded snapshot is unusable, the previous valid snapshot is selected explicitly. `data/processed/observation_selection.json` records the chosen file, retrieval time, age in hours, fallback flag, newer unusable downloads and excluded files. If no snapshot is usable, GHCN processing fails explicitly while METAR/ensembles can still be processed. Existing outputs for a failed source may remain on disk; always inspect the selection and health reports before treating them as current.
 
-Neither observation source provides a temperature forecast. NOAA/NWS hourly grid forecasts near JFK are archived for that purpose; TAFs retain aviation forecast context. All snapshots preserve original bytes, URL, receipt time, HTTP metadata, and SHA-256. Forecast issue/update times and valid times stay separate. No historical forecast vintages are fabricated. A partial network failure retains successful products and records errors in its manifest.
+GHCN daily and quality-audit tables record source, observing date, receipt ID and our retrieval time. METAR observation rows retain observation UTC time, upstream receipt UTC time, our retrieval UTC time, source, receipt ID, original report and QC fields. The small `observation_receipts.csv` maps receipt IDs to raw-file paths, hashes, retrieval times, validation status and coverage, avoiding a repeated long path on every observation row. Duplicate METAR observations use latest upstream receipt, then latest local retrieval and a deterministic path tie-break. Failed downloads never enter the build's METAR parser. Daily aggregate provenance is recoverable through these observation rows and their raw receipts.
 
-## Files
-
-- `data/processed/ghcn_daily.csv`, `ghcn_monthly.csv`
-- `data/processed/metar_daily.csv`, `metar_monthly.csv`
-- `data/processed/ghcn_quality_audit.csv`, `metar_observations.csv`, `daily_comparison.csv`
-- `data/raw/`: timestamped original observations and request metadata
-- `data/forecasts/`: timestamped forecast runs, normalized NWS hourly CSV, manifest
-- `data/reference/`: NOAA format specification, station record, AWC API schema
-
-Sources: [GHCN documentation](https://www.ncei.noaa.gov/pub/data/ghcn/daily/readme.txt), [station catalog](https://www.ncei.noaa.gov/pub/data/ghcn/daily/ghcnd-stations.txt), [AWC API](https://aviationweather.gov/data/api/), [NWS API](https://www.weather.gov/documentation/services-web-api).
-
-## GEFS and ECMWF ensembles through Open-Meteo
-
-The existing `archive` command now collects both explicit ensemble products in addition to NWS hourly forecasts, TAF and METAR. JFK, the historical start date, and the 65°F base are unchanged. This extension collects and inspects forecasts; it does not price derivatives or calculate forecast monthly HDD/CDD.
-
-### Models and API verification (2026-09-17)
-
-| Selected API model | Product | Members including control | Requested window | Documented update frequency |
-|---|---|---:|---:|---|
-| `gfs025` | NOAA GEFS 0.25° | 31 | 10 days | Every 6 hours |
-| `ecmwf_ifs025` | ECMWF IFS 0.25° ENS | 51 | 15 days | Every 6 hours |
-
-Open-Meteo also offers GEFS 0.5° (31 members, up to 35 days), seamless GEFS, AIGEFS, ECMWF AIFS and Europe-specific products. We select the two global physical models explicitly, without best-match or seamless spatial/model selection. Their native output is coarser than hourly; Open-Meteo interpolates to hourly. Individual ensemble members have up to three past days of retention; longer-lived ensemble means/spreads do not preserve individual members or replace a vintage archive. The docs disagree on the overall maximum (35/36 days); our 10/15-day requests avoid that boundary. [Ensemble API documentation](https://open-meteo.com/en/docs/ensemble-api)
-
-ECMWF's open-data cycles are 00/06/12/18 UTC; its documented ENS horizons are 360 hours for 00/12 and 144 hours for 06/18. A 15-day API response must not be assumed to belong entirely to the latest 06/18 run. [ECMWF's official download client documentation](https://github.com/ecmwf/ecmwf-opendata)
-
-Open-Meteo exposes model initialization, modification and availability timestamps separately. Availability can differ across servers; the provider recommends allowing another 10 minutes for replication. These timestamps do not authenticate the run underlying each returned temperature. [Publication metadata documentation](https://open-meteo.com/en/docs/model-updates)
-
-The free endpoint is for non-commercial use: limits are 600 calls/minute, 5,000/hour, 10,000/day and 300,000/month. Long requests can count as multiple calls; do not equate our two forecast HTTP requests with exactly two billing units. Ensemble commercial access requires Professional or higher. Data attribution is required under CC BY 4.0. [Usage terms](https://open-meteo.com/en/terms), [pricing and call accounting](https://open-meteo.com/en/pricing). Attribution: NOAA GEFS and ECMWF IFS via Open-Meteo; this project reshapes responses and computes member quantiles.
-
-### Collection and publication timing
-
-Our Codex automation still polls **every six hours**, independently of model initialization or publication. It now checks five products. Model runs take time to publish; a poll can see unchanged data, partially updated data, or older data. We fetch model metadata before and after each forecast response, retain it verbatim, and flag changing metadata, availability less than 10 minutes old, missing metadata, or availability over two model-update intervals old. We still retain the forecast. Run `ensembles` again after publication settles when a warning warrants it; the next scheduled collection also retries. This policy does not guarantee capture of every upstream cycle, particularly while the host is offline.
-
-No initialization is inferred from receipt time, target start, HTTP Date, or `generationtime_ms` (API processing duration). `initialization_time_utc` is null because the current forecast response provides no verified per-target run timestamp. Advisory metadata times are separate columns and summary fields. These are **retrieval snapshots, not guaranteed single-initialization forecasts**.
-
-Each source runs independently. Successful downloads survive failures elsewhere; the manifest reports failures and the command exits nonzero after attempting all sources. Raw HTTP error responses are retained, too. Transient requests retry up to three times; rate-limit responses honor short Retry-After delays and stop on longer waits. Empty, error, malformed, or all-null responses never become an apparent successful forecast. Partially valid member arrays are retained with warnings; invalid arrays remain in raw JSON, with omitted members identified. Run `build` even after an archive failure to process available data.
-
-### Local commands and files
+Raw snapshots retain every historical revision, even when current analysis tables change. Rebuild observations as known at a historical retrieval cutoff into a separate directory:
 
 ```sh
-.venv/bin/python weather_pipeline.py archive    # all five products; no GHCN refresh
-.venv/bin/python weather_pipeline.py ensembles  # only GEFS + ECMWF, useful for delayed publication
-.venv/bin/python weather_pipeline.py build      # offline rebuild, including ensemble tables
-.venv/bin/python execute_notebook.py            # refresh saved plots and tables
-.venv/bin/python -m unittest -v test_weather_pipeline.py  # offline tests
+.venv/bin/python weather_pipeline.py build \
+  --cutoff 2026-09-18T00:00:00Z --output /tmp/jfk-asof-20260918
 ```
 
-The `refresh` and `all` commands retain their existing observation workflow. The updated automation runs `build` even after a partial archive failure. Schedule execution still requires this local Codex host; the repository itself does not install a daemon or GitHub Actions workflow.
+The cutoff applies to **our observation retrievals**, not inferred upstream availability. Files retrieved later are excluded even if their observing dates are older. No GHCN vintage before the first retained receipt can be reconstructed. Ensemble rebuilds retain the full archive; this switch does not perform forecast evaluation or a forecast cutoff query.
 
-Per-run files in `data/forecasts/<retrieval>/`:
+## Temperature definitions
 
-- Timestamped raw ensemble JSON and HTTP metadata (URL, receipt time, headers and SHA-256).
-- Separate raw model metadata before and after each forecast request.
-- `ensemble_<model>.csv`: every parseable member/target, including null temperatures and control member 0. The unsuffixed `temperature_2m` is the control; numeric suffixes retain their original IDs. [Provider explanation](https://github.com/open-meteo/open-meteo/discussions/366)
-- `ensemble_<model>_summary.json`: counts, coverage, nulls, publication diagnostics and source paths.
-- Existing manifest and NOAA products.
+GHCN rejects missing sentinel values and nonblank quality flags, retains source/measurement flags, rejects reversed extrema, and uses `(TMAX + TMIN)/2`. Dates follow NOAA's observing-day convention. METAR screens temperatures to −60…55°C, averages reports into UTC hourly bins, assigns America/New_York dates, and requires every local hour and a completed day. DST days have 23 or 25 expected hours. The daily mean is the midpoint of sampled hourly extrema; the sampled hourly mean is exported separately. This is not equivalent to GHCN climate QC or measured daily extrema, and the series are not spliced.
 
-`data/processed/ensemble_temperature.csv` is the combined analysis table. It contains model, member ID/role, original variable, station, requested and returned grid coordinates/elevation, original temperature and units, normalized °C, UTC target/retrieval times, null verified initialization, separate advisory timestamps, raw-file provenance, content hash, first/last retrieval and retrieval count.
+HDD65 = max(65 − daily mean °F, 0); CDD65 = max(daily mean °F − 65, 0). Complete monthly indices require every calendar day. Partial sums are labeled; gaps are not imputed or zero-filled.
 
-`data/processed/ensemble_coverage.csv` retains one receipt per archived model retrieval. A content hash ignores response processing duration and retrieval time but includes the model, grid, member/time axes, units, temperatures and null mask. Repeated identical snapshots collapse to one set of analysis rows keyed by hash/member/target while retaining all receipts and raw responses. Changed responses create new snapshots. Equal values across different revisions are not collapsed. Rebuilding is deterministic and does not append duplicates.
+## Ensemble Parquet storage
 
-The notebook reports requested and actual member/target coverage and missing values. It plots one latest snapshot per model with individual trajectories, the median, and the 10th–90th percentile range. The band is **model spread, not a calibrated confidence interval**; it is suppressed when any expected member is unavailable. Missing values are never imputed. The forecast grid near a coastal airport is not a thermometer measurement, and the requested 2.7 m elevation is used for Open-Meteo's downscaling.
+Selected Open-Meteo products remain `gfs025` (GEFS, 31 members, requested 10 days) and `ecmwf_ifs025` (ECMWF IFS ENS, 51 members, requested 15 days). Requested coordinates are 40.6392, −73.7639 with 2.7 m elevation and land selection. Returned grid coordinates are preserved. Hourly API values may be interpolated from coarser model output.
 
-### Live verification
+The growing combined `data/processed/ensemble_temperature.csv` has been replaced by:
 
-The integrated collection on **2026-09-17 at 21:50 UTC** successfully retained NWS, TAF, METAR and both ensembles:
+- `ensemble_temperature/model=<model>/snapshot_id=<hash>/values.parquet`: member IDs/roles, original variable, UTC targets, original values/units and normalized °C, including nulls.
+- `ensemble_snapshots.parquet`: one row per snapshot with location, source provenance, first/last retrieval, receipt count, and initialization/advisory fields.
+- `ensemble_receipts.parquet`: one row per validated archived model retrieval, including repeated unchanged polls and publication metadata. `archive_run` plus `raw_file` identifies its retained raw response.
+- `ensemble_coverage.csv`: small human-readable receipt/coverage summary. `ensemble_schema.json` and the snapshot table index the current partitions. `ensemble_rejections.json` exposes unusable archives.
 
-| Model | Members | Returned UTC target window (inclusive) | Hourly targets/member | Missing temperatures |
-|---|---:|---|---:|---:|
-| GEFS `gfs025` | 31 (0–30) | Sep 17 00:00 – Sep 26 23:00 | 240 | 0 |
-| ECMWF `ecmwf_ifs025` | 51 (0–50) | Sep 17 00:00 – Oct 1 23:00 | 360 | 0 |
+Use `weather_pipeline.load_ensemble_archive()` to join metadata onto values, as the notebook does. `build_ensemble_archive()` rebuilds and returns the same logical table and receipts. The snapshot index controls reads so obsolete unindexed partitions cannot leak into results.
 
-There are 7,440 GEFS and 18,360 ECMWF member-target rows. At retrieval, 218 and 338 hourly targets respectively were in the future; the earlier same-day targets are retained but excluded from the future forecast plot. Verified initialization remains unavailable. Advisory initialization was Sep 17 12 UTC for GEFS and 06 UTC for ECMWF, further illustrating why metadata must not be assigned as a common run time to the complete 15-day response. No complete calendar-month forecast index is claimed.
+A forecast-content hash includes model, requested/returned location, member/time axes, units, values and null masks. It excludes processing duration and retrieval time. An unchanged response creates a receipt, not another member partition. Changed responses remain separate vintages. Every build verifies exact Parquet round trips for all columns and receipts; rebuilding is deterministic. New collections stop writing redundant per-run ensemble CSVs. Existing historical per-run CSVs and all raw files remain intact; no Git history was rewritten.
+
+Before removing the old combined derived CSV, all **103,200 rows, 8 snapshots, 1,104 null temperatures and 12 receipts** were checked against the migrated store. Values, nulls, IDs and provenance matched exactly. The original combined CSV occupied 49,764,221 bytes; the current Parquet values/metadata/receipts occupy approximately 0.36 MB. See `migration_verification.json` and `storage_verification.json`. The live collection added two receipts without adding snapshots.
+
+Verified model initialization remains **null**: the forecast responses do not authenticate a per-target model run. Receipt time, HTTP Date, target start and `generationtime_ms` are never used as initialization. Separate metadata initialization/availability is advisory. Publication warnings include missing/changing metadata, availability within ten minutes, stale availability, missing members and null targets. Unchanged forecasts are distinguishable from collection failures. The notebook's model-spread band is not a calibrated confidence interval and is suppressed where expected members are unavailable.
+
+## Scheduler verification and health
+
+The existing local Codex heartbeat **Archive JFK weather forecasts** (`archive-jfk-weather-forecasts`) was inspected and updated in place; no duplicate was created. Its active six-hour cadence and target task were retained. The prompt now runs the integrated archive/rebuild command with daily GHCN gating and checks `source_health.json`. Routine successful runs and unchanged non-actionable warnings stay quiet; meaningful changes/failures require attention.
+
+Inspection used the actual automation TOML, the read-only local scheduler database, and the target task's execution history. The database's `automation_runs` table had no rows for this heartbeat; target-task records nevertheless showed five archive/build executions with exit code zero. The last-run field before repair was 2026-09-20 02:55:28 UTC, with the next scheduled run at 08:55:26 UTC. Absence of a commit or standalone automation-run row is not evidence of scheduler failure.
+
+| Scheduled task started (UTC) | Saved collection began (UTC) | Commands | Saved before this repair | In local Git HEAD |
+|---|---|---|---|---|
+| Sep 18 03:17:52 | Sep 19 02:37:40 | archive/build exit 0 | Yes | Yes |
+| Sep 19 02:38:51 | Sep 19 02:38:59 | archive/build exit 0 | Yes | Yes |
+| Sep 19 08:53:41 | Sep 19 13:22:16 | archive/build exit 0 | Yes | Yes |
+| Sep 19 17:50:02 | Sep 20 02:42:12 | archive/build exit 0 | Yes | Yes |
+| Sep 20 02:55:28 | Sep 20 02:55:37 | archive/build exit 0 | Yes | Yes |
+
+All five collections retained NWS hourly, TAF, METAR and both ensembles successfully. The two earliest manual collections predated the ensemble workflow; a third manual collection included it. All **eight** pre-repair local archive manifests were already in HEAD, although commits were not six-hour events. The successful forecast-collection gaps included about **28.79, 10.72 and 13.33 hours**. Long task-start-to-download delays are verified, but the evidence does not establish whether sleep, app availability, approvals or other scheduling delays caused them. Raw command evidence is in `data/processed/scheduler_execution_evidence.json`. Remote GitHub state was not separately fetched; the committed comparison is against local HEAD.
+
+Per-source health reports record last attempt, last validated successful retrieval, last changed forecast, observation/forecast coverage end, recent errors, publication warnings, successful retrieval gaps, and current missed/stale flags. Historical gaps are flagged when successful receipts are farther apart than cadence plus grace; current flags distinguish absent attempts from attempts that failed. A recent successful poll can clear current staleness while historical gaps remain visible. Error history can retain resolved errors after recovery. Health is computed when commands run; an offline host cannot alert during its own outage.
+
+Keep the local host powered on, awake, online, with Codex running, this checkout and virtual environment available, and collection network permissions enabled. [Official scheduled-task documentation](https://learn.chatgpt.com/docs/automations?surface=app) requires the computer and app to remain running for local files. This repository installs no daemon or remote workflow. Future on-time execution after this repair has not yet been observed; missed forecast vintages cannot be recovered from current endpoints. These controls improve collection and diagnosis but do not guarantee every model cycle.
+
+## Verification and current coverage
+
+The authorized live collection at **2026-09-20 03:30:46–03:30:57 UTC** archived all seven products below. Seven counts the NWS point lookup separately; there are six meteorological sources. A preceding sandbox-blocked network attempt is retained with transport-error receipts and a failed manifest. It was followed by a successful authorized retry.
+
+| Product | Latest usable coverage from that retrieval |
+|---|---|
+| GHCN daily extrema | Accepted daily temperatures through **2026-09-17** |
+| METAR | Observation through **2026-09-20 02:51 UTC** |
+| NWS point lookup | Successfully refreshed at **03:30:52 UTC**; no time-series horizon |
+| NWS hourly | Period end **2026-09-26 14:00 UTC** |
+| KJFK TAF | Validity end **2026-09-21 06:00 UTC** |
+| GEFS `gfs025` | 31 members; non-null targets through **2026-09-29 20:00 UTC**; 93 nulls (last 3 hours/member) |
+| ECMWF `ecmwf_ifs025` | 51 members; non-null targets through **2026-10-04 14:00 UTC**; 459 nulls (last 9 hours/member) |
+
+Validation includes regression tests for HTTP failure/retry, metadata/hash/content selection, GHCN fallback/age and revision replacement, historical observation cutoffs, METAR failed-response exclusion, partial-source failures, daily refresh gating, repeated execution, freshness/grace reporting, unchanged forecasts, transport failures, and exact Parquet migration. The live collection was followed by a network-free rebuild and notebook execution. Observation availability still lags receipt, forecast tails remain missing, and ensemble run initialization remains unverified.
+
+Sources: [GHCN format](https://www.ncei.noaa.gov/pub/data/ghcn/daily/readme.txt), [AWC API](https://aviationweather.gov/data/api/), [NWS API](https://www.weather.gov/documentation/services-web-api), [Open-Meteo ensembles](https://open-meteo.com/en/docs/ensemble-api), [publication metadata](https://open-meteo.com/en/docs/model-updates). Ensemble attribution: NOAA GEFS and ECMWF IFS via Open-Meteo, CC BY 4.0.

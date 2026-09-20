@@ -1,0 +1,27 @@
+{
+  "retrieved_at_utc": "2026-09-20T03:30:52.820701+00:00",
+  "url": "https://api.weather.gov/gridpoints/OKX/42,40/forecast/hourly",
+  "status": 200,
+  "sha256": "f9d656ca87b3222a40ec7e32f6139afcd72d7867e0c730029ebd786bff1ae1b0",
+  "headers": {
+    "Server": "nginx/1.28.3",
+    "Content-Type": "application/geo+json",
+    "Last-Modified": "Sun, 20 Sep 2026 01:59:58 GMT",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Expose-Headers": "X-Correlation-Id, X-Request-Id, X-Server-Id",
+    "X-Request-ID": "01a0bcb6-cb7e-7e62-b5b4-c81b7ce7b60e",
+    "X-Correlation-ID": "181b8d95",
+    "X-Server-ID": "vm-cprk-api-ops-app3.ncep.noaa.gov",
+    "ETag": "W/\"1789869600:dtagent10337260504112723F6xZ:dtagent10337260504112723F6xZ\"",
+    "Server-Timing": "dtTrId;desc=\"eed94706dd0ae6e43622e3925ed59d10\", dtSInfo;desc=\"0\"",
+    "Content-Encoding": "gzip",
+    "Content-Length": "4835",
+    "Cache-Control": "public, max-age=1039, s-maxage=3600",
+    "Expires": "Sun, 20 Sep 2026 03:48:11 GMT",
+    "Date": "Sun, 20 Sep 2026 03:30:52 GMT",
+    "Connection": "keep-alive",
+    "Vary": "Accept-Encoding, Accept,Feature-Flags,Accept-Language",
+    "X-Edge-Request-ID": "c0bb20f9",
+    "Strict-Transport-Security": "max-age=31536000 ; includeSubDomains ; preload"
+  }
+}

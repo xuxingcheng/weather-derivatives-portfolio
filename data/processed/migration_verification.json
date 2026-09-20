@@ -1,0 +1,9 @@
+{
+  "legacy_rows": 103200,
+  "snapshot_count": 8,
+  "receipts": 12,
+  "null_temperatures": 1104,
+  "legacy_csv_exact_match": true,
+  "verified_at_utc": "2026-09-20T03:30:01.976157+00:00",
+  "legacy_csv_bytes": 49764221
+}

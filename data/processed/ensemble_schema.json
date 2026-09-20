@@ -1,0 +1,30 @@
+{
+  "columns": [
+    "member_id",
+    "member_role",
+    "source_variable",
+    "target_time_utc",
+    "temperature_2m",
+    "units",
+    "temperature_c",
+    "model",
+    "station",
+    "requested_latitude",
+    "requested_longitude",
+    "requested_elevation_m",
+    "grid_latitude",
+    "grid_longitude",
+    "response_elevation_m",
+    "retrieved_at_utc",
+    "initialization_time_utc",
+    "initialization_status",
+    "snapshot_id",
+    "raw_file",
+    "advisory_initialization_time_utc",
+    "advisory_availability_time_utc",
+    "first_retrieved_at_utc",
+    "last_retrieved_at_utc",
+    "retrieval_count"
+  ],
+  "version": 1
+}

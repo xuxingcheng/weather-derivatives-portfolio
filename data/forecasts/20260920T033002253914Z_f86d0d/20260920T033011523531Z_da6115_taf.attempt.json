@@ -1,0 +1,7 @@
+{
+  "attempted_at_utc": "2026-09-20T03:30:11.526326+00:00",
+  "url": "https://aviationweather.gov/api/data/taf?ids=KJFK&format=json",
+  "candidate": "/Users/stevenxu/Documents/ChatGPT/Weather Derivative/data/forecasts/20260920T033002253914Z_f86d0d/20260920T033011523531Z_da6115_taf.json",
+  "error": "HTTPSConnectionPool(host='aviationweather.gov', port=443): Max retries exceeded with url: /api/data/taf?ids=KJFK&format=json (Caused by NameResolutionError(\"HTTPSConnection(host='aviationweather.gov', port=443): Failed to resolve 'aviationweather.gov' ([Errno 8] nodename nor servname provided, or not known)\"))",
+  "attempt": 3
+}

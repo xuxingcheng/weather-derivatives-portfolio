@@ -1,0 +1,7 @@
+{
+  "attempted_at_utc": "2026-09-20T03:30:24.626945+00:00",
+  "url": "https://ensemble-api.open-meteo.com/v1/ensemble?latitude=40.6392&longitude=-73.7639&hourly=temperature_2m&models=ecmwf_ifs025&forecast_days=15&temperature_unit=celsius&timezone=GMT&timeformat=unixtime&cell_selection=land&elevation=2.7",
+  "candidate": "/Users/stevenxu/Documents/ChatGPT/Weather Derivative/data/forecasts/20260920T033002253914Z_f86d0d/20260920T033024623173Z_13bee3_ensemble_ecmwf_ifs025.json",
+  "error": "HTTPSConnectionPool(host='ensemble-api.open-meteo.com', port=443): Max retries exceeded with url: /v1/ensemble?latitude=40.6392&longitude=-73.7639&hourly=temperature_2m&models=ecmwf_ifs025&forecast_days=15&temperature_unit=celsius&timezone=GMT&timeformat=unixtime&cell_selection=land&elevation=2.7 (Caused by NameResolutionError(\"HTTPSConnection(host='ensemble-api.open-meteo.com', port=443): Failed to resolve 'ensemble-api.open-meteo.com' ([Errno 8] nodename nor servname provided, or not known)\"))",
+  "attempt": 2
+}

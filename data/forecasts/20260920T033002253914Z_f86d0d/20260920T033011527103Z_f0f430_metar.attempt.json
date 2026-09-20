@@ -1,0 +1,7 @@
+{
+  "attempted_at_utc": "2026-09-20T03:30:11.528505+00:00",
+  "url": "https://aviationweather.gov/api/data/metar?ids=KJFK&format=json&hours=48",
+  "candidate": "/Users/stevenxu/Documents/ChatGPT/Weather Derivative/data/forecasts/20260920T033002253914Z_f86d0d/20260920T033011527103Z_f0f430_metar.json",
+  "error": "HTTPSConnectionPool(host='aviationweather.gov', port=443): Max retries exceeded with url: /api/data/metar?ids=KJFK&format=json&hours=48 (Caused by NameResolutionError(\"HTTPSConnection(host='aviationweather.gov', port=443): Failed to resolve 'aviationweather.gov' ([Errno 8] nodename nor servname provided, or not known)\"))",
+  "attempt": 1
+}

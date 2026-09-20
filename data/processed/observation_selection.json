@@ -1,0 +1,13 @@
+{
+  "ghcn": {
+    "raw_file": "data/raw/ghcn/20260920T033052159252Z_39c80c_USW00094789.dly",
+    "retrieved_at_utc": "2026-09-20T03:30:52.161805+00:00",
+    "age_hours": 0.08386398333333334,
+    "fallback": false,
+    "newer_unusable": [],
+    "excluded": []
+  },
+  "excluded_metar": [],
+  "errors": {},
+  "cutoff": null
+}

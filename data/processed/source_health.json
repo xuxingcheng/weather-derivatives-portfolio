@@ -1,0 +1,371 @@
+{
+  "checked_at_utc": "2026-09-20T03:35:54.437301+00:00",
+  "sources": {
+    "ghcn": {
+      "last_attempt": "2026-09-20T03:30:52.161805+00:00",
+      "last_successful_retrieval": "2026-09-20T03:30:52.161805+00:00",
+      "last_changed_forecast_snapshot": null,
+      "coverage_end": "2026-09-17",
+      "observation_coverage_end": "2026-09-17",
+      "raw_file": "data/raw/ghcn/20260920T033052159252Z_39c80c_USW00094789.dly",
+      "last_attempt_error": null,
+      "errors": [
+        {
+          "time": "2026-09-20T03:30:02.470472+00:00",
+          "error": "HTTPSConnectionPool(host='www.ncei.noaa.gov', port=443): Max retries exceeded with url: /pub/data/ghcn/daily/all/USW00094789.dly (Caused by NameResolutionError(\"HTTPSConnection(host='www.ncei.noaa.gov', port=443): Failed to resolve 'www.ncei.noaa.gov' ([Errno 8] nodename nor servname provided, or not known)\"))",
+          "raw_file": null
+        },
+        {
+          "time": "2026-09-20T03:30:03.477656+00:00",
+          "error": "HTTPSConnectionPool(host='www.ncei.noaa.gov', port=443): Max retries exceeded with url: /pub/data/ghcn/daily/all/USW00094789.dly (Caused by NameResolutionError(\"HTTPSConnection(host='www.ncei.noaa.gov', port=443): Failed to resolve 'www.ncei.noaa.gov' ([Errno 8] nodename nor servname provided, or not known)\"))",
+          "raw_file": null
+        },
+        {
+          "time": "2026-09-20T03:30:05.487729+00:00",
+          "error": "HTTPSConnectionPool(host='www.ncei.noaa.gov', port=443): Max retries exceeded with url: /pub/data/ghcn/daily/all/USW00094789.dly (Caused by NameResolutionError(\"HTTPSConnection(host='www.ncei.noaa.gov', port=443): Failed to resolve 'www.ncei.noaa.gov' ([Errno 8] nodename nor servname provided, or not known)\"))",
+          "raw_file": null
+        },
+        {
+          "time": "2026-09-20T03:30:26.638072+00:00",
+          "error": "HTTPSConnectionPool(host='www.ncei.noaa.gov', port=443): Max retries exceeded with url: /pub/data/ghcn/daily/all/USW00094789.dly (Caused by NameResolutionError(\"HTTPSConnection(host='www.ncei.noaa.gov', port=443): Failed to resolve 'www.ncei.noaa.gov' ([Errno 8] nodename nor servname provided, or not known)\"))",
+          "raw_file": "data/forecasts/20260920T033002253914Z_f86d0d/manifest.json"
+        }
+      ],
+      "publication_warnings": [],
+      "unchanged_since_previous_success": false,
+      "missed_collection": false,
+      "stale_success": false,
+      "successful_receipts": 2,
+      "recorded_events": 6,
+      "successful_retrieval_gaps": [
+        {
+          "from_utc": "2026-09-17T21:00:13.134543+00:00",
+          "to_utc": "2026-09-20T03:30:52.161805+00:00",
+          "hours": 54.510840906111106
+        }
+      ],
+      "expected_interval_hours": 24,
+      "grace_hours": 2
+    },
+    "metar": {
+      "last_attempt": "2026-09-20T03:30:53.160508+00:00",
+      "last_successful_retrieval": "2026-09-20T03:30:53.160508+00:00",
+      "last_changed_forecast_snapshot": null,
+      "coverage_end": "2026-09-20T02:51:00+00:00",
+      "observation_coverage_end": "2026-09-20T02:51:00+00:00",
+      "raw_file": "data/forecasts/20260920T033046736669Z_336056/20260920T033053159913Z_446780_metar.json",
+      "last_attempt_error": null,
+      "errors": [
+        {
+          "time": "2026-09-20T03:30:11.528505+00:00",
+          "error": "HTTPSConnectionPool(host='aviationweather.gov', port=443): Max retries exceeded with url: /api/data/metar?ids=KJFK&format=json&hours=48 (Caused by NameResolutionError(\"HTTPSConnection(host='aviationweather.gov', port=443): Failed to resolve 'aviationweather.gov' ([Errno 8] nodename nor servname provided, or not known)\"))",
+          "raw_file": null
+        },
+        {
+          "time": "2026-09-20T03:30:12.538335+00:00",
+          "error": "HTTPSConnectionPool(host='aviationweather.gov', port=443): Max retries exceeded with url: /api/data/metar?ids=KJFK&format=json&hours=48 (Caused by NameResolutionError(\"HTTPSConnection(host='aviationweather.gov', port=443): Failed to resolve 'aviationweather.gov' ([Errno 8] nodename nor servname provided, or not known)\"))",
+          "raw_file": null
+        },
+        {
+          "time": "2026-09-20T03:30:14.548156+00:00",
+          "error": "HTTPSConnectionPool(host='aviationweather.gov', port=443): Max retries exceeded with url: /api/data/metar?ids=KJFK&format=json&hours=48 (Caused by NameResolutionError(\"HTTPSConnection(host='aviationweather.gov', port=443): Failed to resolve 'aviationweather.gov' ([Errno 8] nodename nor servname provided, or not known)\"))",
+          "raw_file": null
+        },
+        {
+          "time": "2026-09-20T03:30:26.638072+00:00",
+          "error": "HTTPSConnectionPool(host='aviationweather.gov', port=443): Max retries exceeded with url: /api/data/metar?ids=KJFK&format=json&hours=48 (Caused by NameResolutionError(\"HTTPSConnection(host='aviationweather.gov', port=443): Failed to resolve 'aviationweather.gov' ([Errno 8] nodename nor servname provided, or not known)\"))",
+          "raw_file": "data/forecasts/20260920T033002253914Z_f86d0d/manifest.json"
+        }
+      ],
+      "publication_warnings": [],
+      "unchanged_since_previous_success": true,
+      "missed_collection": false,
+      "stale_success": false,
+      "successful_receipts": 15,
+      "recorded_events": 19,
+      "successful_retrieval_gaps": [
+        {
+          "from_utc": "2026-09-17T21:50:26.631971+00:00",
+          "to_utc": "2026-09-19T02:37:41.424801+00:00",
+          "hours": 28.78744245277778
+        },
+        {
+          "from_utc": "2026-09-19T02:39:00.696402+00:00",
+          "to_utc": "2026-09-19T13:22:17.336177+00:00",
+          "hours": 10.72128882638889
+        },
+        {
+          "from_utc": "2026-09-19T13:22:17.336177+00:00",
+          "to_utc": "2026-09-20T02:54:29.455443+00:00",
+          "hours": 13.536699796111112
+        }
+      ],
+      "expected_interval_hours": 6,
+      "grace_hours": 2
+    },
+    "nws_point": {
+      "last_attempt": "2026-09-20T03:30:52.641717+00:00",
+      "last_successful_retrieval": "2026-09-20T03:30:52.641717+00:00",
+      "last_changed_forecast_snapshot": null,
+      "coverage_end": null,
+      "observation_coverage_end": null,
+      "raw_file": "data/forecasts/20260920T033046736669Z_336056/20260920T033052640834Z_a8c466_nws_point.json",
+      "last_attempt_error": null,
+      "errors": [
+        {
+          "time": "2026-09-20T03:30:05.491443+00:00",
+          "error": "HTTPSConnectionPool(host='api.weather.gov', port=443): Max retries exceeded with url: /points/40.6392,-73.7639 (Caused by NameResolutionError(\"HTTPSConnection(host='api.weather.gov', port=443): Failed to resolve 'api.weather.gov' ([Errno 8] nodename nor servname provided, or not known)\"))",
+          "raw_file": null
+        },
+        {
+          "time": "2026-09-20T03:30:06.502050+00:00",
+          "error": "HTTPSConnectionPool(host='api.weather.gov', port=443): Max retries exceeded with url: /points/40.6392,-73.7639 (Caused by NameResolutionError(\"HTTPSConnection(host='api.weather.gov', port=443): Failed to resolve 'api.weather.gov' ([Errno 8] nodename nor servname provided, or not known)\"))",
+          "raw_file": null
+        },
+        {
+          "time": "2026-09-20T03:30:08.506884+00:00",
+          "error": "HTTPSConnectionPool(host='api.weather.gov', port=443): Max retries exceeded with url: /points/40.6392,-73.7639 (Caused by NameResolutionError(\"HTTPSConnection(host='api.weather.gov', port=443): Failed to resolve 'api.weather.gov' ([Errno 8] nodename nor servname provided, or not known)\"))",
+          "raw_file": null
+        }
+      ],
+      "publication_warnings": [],
+      "unchanged_since_previous_success": true,
+      "missed_collection": false,
+      "stale_success": false,
+      "successful_receipts": 9,
+      "recorded_events": 12,
+      "successful_retrieval_gaps": [
+        {
+          "from_utc": "2026-09-17T21:50:25.989728+00:00",
+          "to_utc": "2026-09-19T02:37:40.597312+00:00",
+          "hours": 28.787390995555555
+        },
+        {
+          "from_utc": "2026-09-19T02:38:59.959789+00:00",
+          "to_utc": "2026-09-19T13:22:16.674328+00:00",
+          "hours": 10.721309594166668
+        },
+        {
+          "from_utc": "2026-09-19T13:22:16.674328+00:00",
+          "to_utc": "2026-09-20T02:42:12.709857+00:00",
+          "hours": 13.332232091388889
+        }
+      ],
+      "expected_interval_hours": 6,
+      "grace_hours": 2
+    },
+    "nws_hourly": {
+      "last_attempt": "2026-09-20T03:30:52.820701+00:00",
+      "last_successful_retrieval": "2026-09-20T03:30:52.820701+00:00",
+      "last_changed_forecast_snapshot": "2026-09-20T02:55:37.610257+00:00",
+      "coverage_end": "2026-09-26T14:00:00+00:00",
+      "observation_coverage_end": null,
+      "raw_file": "data/forecasts/20260920T033046736669Z_336056/20260920T033052819750Z_17ce9a_nws_hourly.json",
+      "last_attempt_error": null,
+      "errors": [
+        {
+          "time": "2026-09-20T03:30:26.638072+00:00",
+          "error": "HTTPSConnectionPool(host='api.weather.gov', port=443): Max retries exceeded with url: /points/40.6392,-73.7639 (Caused by NameResolutionError(\"HTTPSConnection(host='api.weather.gov', port=443): Failed to resolve 'api.weather.gov' ([Errno 8] nodename nor servname provided, or not known)\"))",
+          "raw_file": "data/forecasts/20260920T033002253914Z_f86d0d/manifest.json"
+        }
+      ],
+      "publication_warnings": [],
+      "unchanged_since_previous_success": true,
+      "missed_collection": false,
+      "stale_success": false,
+      "successful_receipts": 9,
+      "recorded_events": 10,
+      "successful_retrieval_gaps": [
+        {
+          "from_utc": "2026-09-17T21:50:26.204238+00:00",
+          "to_utc": "2026-09-19T02:37:40.908440+00:00",
+          "hours": 28.787417833888888
+        },
+        {
+          "from_utc": "2026-09-19T02:39:00.120401+00:00",
+          "to_utc": "2026-09-19T13:22:16.873671+00:00",
+          "hours": 10.721320352777779
+        },
+        {
+          "from_utc": "2026-09-19T13:22:16.873671+00:00",
+          "to_utc": "2026-09-20T02:42:12.909425+00:00",
+          "hours": 13.332232153888889
+        }
+      ],
+      "expected_interval_hours": 6,
+      "grace_hours": 2
+    },
+    "taf": {
+      "last_attempt": "2026-09-20T03:30:53.006804+00:00",
+      "last_successful_retrieval": "2026-09-20T03:30:53.006804+00:00",
+      "last_changed_forecast_snapshot": "2026-09-20T02:42:13.145743+00:00",
+      "coverage_end": "2026-09-21T06:00:00+00:00",
+      "observation_coverage_end": null,
+      "raw_file": "data/forecasts/20260920T033046736669Z_336056/20260920T033053006249Z_9f4084_taf.json",
+      "last_attempt_error": null,
+      "errors": [
+        {
+          "time": "2026-09-20T03:30:08.510855+00:00",
+          "error": "HTTPSConnectionPool(host='aviationweather.gov', port=443): Max retries exceeded with url: /api/data/taf?ids=KJFK&format=json (Caused by NameResolutionError(\"HTTPSConnection(host='aviationweather.gov', port=443): Failed to resolve 'aviationweather.gov' ([Errno 8] nodename nor servname provided, or not known)\"))",
+          "raw_file": null
+        },
+        {
+          "time": "2026-09-20T03:30:09.520235+00:00",
+          "error": "HTTPSConnectionPool(host='aviationweather.gov', port=443): Max retries exceeded with url: /api/data/taf?ids=KJFK&format=json (Caused by NameResolutionError(\"HTTPSConnection(host='aviationweather.gov', port=443): Failed to resolve 'aviationweather.gov' ([Errno 8] nodename nor servname provided, or not known)\"))",
+          "raw_file": null
+        },
+        {
+          "time": "2026-09-20T03:30:11.526326+00:00",
+          "error": "HTTPSConnectionPool(host='aviationweather.gov', port=443): Max retries exceeded with url: /api/data/taf?ids=KJFK&format=json (Caused by NameResolutionError(\"HTTPSConnection(host='aviationweather.gov', port=443): Failed to resolve 'aviationweather.gov' ([Errno 8] nodename nor servname provided, or not known)\"))",
+          "raw_file": null
+        },
+        {
+          "time": "2026-09-20T03:30:26.638072+00:00",
+          "error": "HTTPSConnectionPool(host='aviationweather.gov', port=443): Max retries exceeded with url: /api/data/taf?ids=KJFK&format=json (Caused by NameResolutionError(\"HTTPSConnection(host='aviationweather.gov', port=443): Failed to resolve 'aviationweather.gov' ([Errno 8] nodename nor servname provided, or not known)\"))",
+          "raw_file": "data/forecasts/20260920T033002253914Z_f86d0d/manifest.json"
+        }
+      ],
+      "publication_warnings": [],
+      "unchanged_since_previous_success": true,
+      "missed_collection": false,
+      "stale_success": false,
+      "successful_receipts": 9,
+      "recorded_events": 13,
+      "successful_retrieval_gaps": [
+        {
+          "from_utc": "2026-09-17T21:50:26.370715+00:00",
+          "to_utc": "2026-09-19T02:37:41.222528+00:00",
+          "hours": 28.787458836944445
+        },
+        {
+          "from_utc": "2026-09-19T02:39:00.547456+00:00",
+          "to_utc": "2026-09-19T13:22:17.131127+00:00",
+          "hours": 10.721273241944445
+        },
+        {
+          "from_utc": "2026-09-19T13:22:17.131127+00:00",
+          "to_utc": "2026-09-20T02:42:13.145743+00:00",
+          "hours": 13.332226282222223
+        }
+      ],
+      "expected_interval_hours": 6,
+      "grace_hours": 2
+    },
+    "ensemble_gfs025": {
+      "last_attempt": "2026-09-20T03:30:54.701172+00:00",
+      "last_successful_retrieval": "2026-09-20T03:30:54.701172+00:00",
+      "last_changed_forecast_snapshot": "2026-09-20T02:54:30.848048+00:00",
+      "coverage_end": "2026-09-29T20:00:00+00:00",
+      "observation_coverage_end": null,
+      "raw_file": "data/forecasts/20260920T033046736669Z_336056/20260920T033054700202Z_1d3234_ensemble_gfs025.json",
+      "last_attempt_error": null,
+      "errors": [
+        {
+          "time": "2026-09-20T03:30:17.576108+00:00",
+          "error": "HTTPSConnectionPool(host='ensemble-api.open-meteo.com', port=443): Max retries exceeded with url: /v1/ensemble?latitude=40.6392&longitude=-73.7639&hourly=temperature_2m&models=gfs025&forecast_days=10&temperature_unit=celsius&timezone=GMT&timeformat=unixtime&cell_selection=land&elevation=2.7 (Caused by NameResolutionError(\"HTTPSConnection(host='ensemble-api.open-meteo.com', port=443): Failed to resolve 'ensemble-api.open-meteo.com' ([Errno 8] nodename nor servname provided, or not known)\"))",
+          "raw_file": null
+        },
+        {
+          "time": "2026-09-20T03:30:18.585210+00:00",
+          "error": "HTTPSConnectionPool(host='ensemble-api.open-meteo.com', port=443): Max retries exceeded with url: /v1/ensemble?latitude=40.6392&longitude=-73.7639&hourly=temperature_2m&models=gfs025&forecast_days=10&temperature_unit=celsius&timezone=GMT&timeformat=unixtime&cell_selection=land&elevation=2.7 (Caused by NameResolutionError(\"HTTPSConnection(host='ensemble-api.open-meteo.com', port=443): Failed to resolve 'ensemble-api.open-meteo.com' ([Errno 8] nodename nor servname provided, or not known)\"))",
+          "raw_file": null
+        },
+        {
+          "time": "2026-09-20T03:30:20.594143+00:00",
+          "error": "HTTPSConnectionPool(host='ensemble-api.open-meteo.com', port=443): Max retries exceeded with url: /v1/ensemble?latitude=40.6392&longitude=-73.7639&hourly=temperature_2m&models=gfs025&forecast_days=10&temperature_unit=celsius&timezone=GMT&timeformat=unixtime&cell_selection=land&elevation=2.7 (Caused by NameResolutionError(\"HTTPSConnection(host='ensemble-api.open-meteo.com', port=443): Failed to resolve 'ensemble-api.open-meteo.com' ([Errno 8] nodename nor servname provided, or not known)\"))",
+          "raw_file": null
+        },
+        {
+          "time": "2026-09-20T03:30:26.638072+00:00",
+          "error": "HTTPSConnectionPool(host='ensemble-api.open-meteo.com', port=443): Max retries exceeded with url: /v1/ensemble?latitude=40.6392&longitude=-73.7639&hourly=temperature_2m&models=gfs025&forecast_days=10&temperature_unit=celsius&timezone=GMT&timeformat=unixtime&cell_selection=land&elevation=2.7 (Caused by NameResolutionError(\"HTTPSConnection(host='ensemble-api.open-meteo.com', port=443): Failed to resolve 'ensemble-api.open-meteo.com' ([Errno 8] nodename nor servname provided, or not known)\"))",
+          "raw_file": "data/forecasts/20260920T033002253914Z_f86d0d/manifest.json"
+        }
+      ],
+      "publication_warnings": [
+        "93 missing temperature values; no imputation"
+      ],
+      "unchanged_since_previous_success": true,
+      "missed_collection": false,
+      "stale_success": false,
+      "successful_receipts": 7,
+      "recorded_events": 11,
+      "successful_retrieval_gaps": [
+        {
+          "from_utc": "2026-09-17T21:50:27.977707+00:00",
+          "to_utc": "2026-09-19T02:37:42.745393+00:00",
+          "hours": 28.787435468333335
+        },
+        {
+          "from_utc": "2026-09-19T02:39:01.892586+00:00",
+          "to_utc": "2026-09-19T13:22:18.849035+00:00",
+          "hours": 10.721376791388888
+        },
+        {
+          "from_utc": "2026-09-19T13:22:18.849035+00:00",
+          "to_utc": "2026-09-20T02:54:30.848048+00:00",
+          "hours": 13.5366663925
+        }
+      ],
+      "expected_interval_hours": 6,
+      "grace_hours": 2
+    },
+    "ensemble_ecmwf_ifs025": {
+      "last_attempt": "2026-09-20T03:30:56.730393+00:00",
+      "last_successful_retrieval": "2026-09-20T03:30:56.730393+00:00",
+      "last_changed_forecast_snapshot": "2026-09-20T02:54:33.092152+00:00",
+      "coverage_end": "2026-10-04T14:00:00+00:00",
+      "observation_coverage_end": null,
+      "raw_file": "data/forecasts/20260920T033046736669Z_336056/20260920T033056730045Z_27401d_ensemble_ecmwf_ifs025.json",
+      "last_attempt_error": null,
+      "errors": [
+        {
+          "time": "2026-09-20T03:30:23.617666+00:00",
+          "error": "HTTPSConnectionPool(host='ensemble-api.open-meteo.com', port=443): Max retries exceeded with url: /v1/ensemble?latitude=40.6392&longitude=-73.7639&hourly=temperature_2m&models=ecmwf_ifs025&forecast_days=15&temperature_unit=celsius&timezone=GMT&timeformat=unixtime&cell_selection=land&elevation=2.7 (Caused by NameResolutionError(\"HTTPSConnection(host='ensemble-api.open-meteo.com', port=443): Failed to resolve 'ensemble-api.open-meteo.com' ([Errno 8] nodename nor servname provided, or not known)\"))",
+          "raw_file": null
+        },
+        {
+          "time": "2026-09-20T03:30:24.626945+00:00",
+          "error": "HTTPSConnectionPool(host='ensemble-api.open-meteo.com', port=443): Max retries exceeded with url: /v1/ensemble?latitude=40.6392&longitude=-73.7639&hourly=temperature_2m&models=ecmwf_ifs025&forecast_days=15&temperature_unit=celsius&timezone=GMT&timeformat=unixtime&cell_selection=land&elevation=2.7 (Caused by NameResolutionError(\"HTTPSConnection(host='ensemble-api.open-meteo.com', port=443): Failed to resolve 'ensemble-api.open-meteo.com' ([Errno 8] nodename nor servname provided, or not known)\"))",
+          "raw_file": null
+        },
+        {
+          "time": "2026-09-20T03:30:26.636507+00:00",
+          "error": "HTTPSConnectionPool(host='ensemble-api.open-meteo.com', port=443): Max retries exceeded with url: /v1/ensemble?latitude=40.6392&longitude=-73.7639&hourly=temperature_2m&models=ecmwf_ifs025&forecast_days=15&temperature_unit=celsius&timezone=GMT&timeformat=unixtime&cell_selection=land&elevation=2.7 (Caused by NameResolutionError(\"HTTPSConnection(host='ensemble-api.open-meteo.com', port=443): Failed to resolve 'ensemble-api.open-meteo.com' ([Errno 8] nodename nor servname provided, or not known)\"))",
+          "raw_file": null
+        },
+        {
+          "time": "2026-09-20T03:30:26.638072+00:00",
+          "error": "HTTPSConnectionPool(host='ensemble-api.open-meteo.com', port=443): Max retries exceeded with url: /v1/ensemble?latitude=40.6392&longitude=-73.7639&hourly=temperature_2m&models=ecmwf_ifs025&forecast_days=15&temperature_unit=celsius&timezone=GMT&timeformat=unixtime&cell_selection=land&elevation=2.7 (Caused by NameResolutionError(\"HTTPSConnection(host='ensemble-api.open-meteo.com', port=443): Failed to resolve 'ensemble-api.open-meteo.com' ([Errno 8] nodename nor servname provided, or not known)\"))",
+          "raw_file": "data/forecasts/20260920T033002253914Z_f86d0d/manifest.json"
+        }
+      ],
+      "publication_warnings": [
+        "459 missing temperature values; no imputation"
+      ],
+      "unchanged_since_previous_success": true,
+      "missed_collection": false,
+      "stale_success": false,
+      "successful_receipts": 7,
+      "recorded_events": 11,
+      "successful_retrieval_gaps": [
+        {
+          "from_utc": "2026-09-17T21:50:30.221473+00:00",
+          "to_utc": "2026-09-19T02:37:44.947558+00:00",
+          "hours": 28.7874239125
+        },
+        {
+          "from_utc": "2026-09-19T02:39:04.212283+00:00",
+          "to_utc": "2026-09-19T13:22:21.058461+00:00",
+          "hours": 10.721346160555555
+        },
+        {
+          "from_utc": "2026-09-19T13:22:21.058461+00:00",
+          "to_utc": "2026-09-20T02:54:33.092152+00:00",
+          "hours": 13.536676025277776
+        }
+      ],
+      "expected_interval_hours": 6,
+      "grace_hours": 2
+    }
+  }
+}

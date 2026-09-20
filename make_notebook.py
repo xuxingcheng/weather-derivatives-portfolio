@@ -26,10 +26,12 @@ md('''## 1. Download and preserve source data
 Set the switches to `True` to refresh. Each response is retained with retrieval time, URL, headers, and SHA-256. Forecast runs keep independent snapshots and a manifest; a partial failure raises an error while preserving successful products. TAFs are aviation forecasts, not hourly temperature forecasts.'''),
 code('''REFRESH_OBSERVATIONS = False
 ARCHIVE_FORECAST_NOW = False
-if ARCHIVE_FORECAST_NOW:
-    w.archive_forecasts()
-if REFRESH_OBSERVATIONS:
-    w.refresh_observations()'''),
+for enabled, collect in [(ARCHIVE_FORECAST_NOW, w.archive_forecasts), (REFRESH_OBSERVATIONS, w.refresh_observations)]:
+    if enabled:
+        try:
+            collect()
+        except Exception as exc:
+            print('Partial collection; continuing offline build:', exc)'''),
 md('''## 2. Clean both daily versions
 **GHCN:** parse tenths of °C; reject `-9999` and nonblank NOAA quality flags. Retain measurement/source flags in the audit CSV. Reject reversed extrema and leave gaps unfilled. Temperature is `(TMAX + TMIN) / 2` on NOAA's reported date; historical observing-day conventions may differ from a local calendar day.
 
@@ -68,7 +70,7 @@ if len(paired):
     paired[['tmean_c_ghcn', 'tmean_c_metar']].plot(marker='o', ylabel='°C', title='Daily mean temperature: overlap')
     plt.show()'''),
 md('''## 5. Forecast archive
-Each six-hour run saves the entire available NWS hourly horizon and current TAF, plus 48 hours of METAR for continued observation coverage. Retrieval, forecast update/generation, and valid times remain distinct. NWS is a grid forecast near JFK, not a station-issued thermometer forecast. The scheduler depends on the Codex desktop host being available; missed snapshots cannot be reconstructed from the current forecast endpoint.'''),
+GHCN is refreshed when the last validated retrieval is at least 24 hours old; each rebuild reparses the full snapshot to incorporate revisions. Only successful, structurally validated downloads enter observations. The selection report records fallback and snapshot age. Each six-hour run saves the entire available NWS hourly horizon and current TAF, plus 48 hours of METAR for continued observation coverage. Retrieval, forecast update/generation, and valid times remain distinct. NWS is a grid forecast near JFK, not a station-issued thermometer forecast. The scheduler depends on the Codex desktop host being available; missed snapshots cannot be reconstructed from the current forecast endpoint.'''),
 code('''import json
 runs = sorted((w.ROOT / 'data/forecasts').glob('*/manifest.json'))
 status = []
@@ -76,6 +78,8 @@ for path in runs:
     m = json.loads(path.read_text())
     status.append({'retrieved_utc': m['started_at_utc'], 'products': ', '.join(m['products']), 'errors': str(m['errors'])})
 display(pd.DataFrame(status))
+display(pd.read_csv(w.OUT / 'source_health.csv')[['source', 'last_attempt', 'last_successful_retrieval', 'coverage_end', 'missed_collection', 'stale_success']])
+print(json.loads((w.OUT / 'observation_selection.json').read_text())['ghcn'])
 latest = sorted((w.ROOT / 'data/forecasts').glob('*/nws_hourly.csv'))[-1]
 forecast = pd.read_csv(latest)
 display(forecast[['startTime', 'endTime', 'temperature', 'temperatureUnit', 'update_time_utc', 'lead_hours_at_retrieval']].head(12))
@@ -87,8 +91,9 @@ All returned members and null values are preserved. Hourly API values can be int
 
 Forecast responses do not supply a verifiable initialization timestamp. `initialization_time_utc` remains null. Separate model metadata initialization/availability times are **advisory**, not assigned to every forecast target. `generationtime_ms` measures API computation time, not model initialization. These are retrieval snapshots, potentially containing data from successive runs, not guaranteed single-run hindcasts. Individual-member retention is only up to three past days; this does not reconstruct missed historical vintages.
 
-Identical forecast-content snapshots share a content hash; the analysis table has one row per snapshot/member/target. All retrieval receipts and raw responses remain archived. Any changed temperature, null mask, member set, time axis, or grid creates a new snapshot. Matching individual values across distinct snapshots are deliberately retained.'''),
-code('''ensemble, coverage = w.build_ensemble_archive()
+Identical forecast-content snapshots share a content hash; the analysis table has one row per snapshot/member/target. Member values are stored in Parquet partitions by model and snapshot; snapshot metadata and retrieval receipts hold provenance once. Small coverage and health CSVs remain available. All retrieval receipts and raw responses remain archived. Any changed temperature, null mask, member set, time axis, or grid creates a new snapshot. Matching individual values across distinct snapshots are deliberately retained.'''),
+code('''ensemble = w.load_ensemble_archive()
+coverage = pd.read_csv(w.OUT / 'ensemble_coverage.csv')
 if coverage.empty:
     print('No ensemble archive yet. Run: .venv/bin/python weather_pipeline.py ensembles')
 else:
