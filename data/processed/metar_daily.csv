@@ -30,4 +30,5 @@ date,tmin_c,tmax_c,sampled_hourly_mean_c,observed_hours,expected_hours,coverage,
 2026-09-15,14.4,21.1,17.900000000000002,24,24,1.0,True,17.75,METAR sampled hourly extrema,63.95,1.0499999999999972,0.0
 2026-09-16,15.6,24.4,20.683333333333334,24,24,1.0,True,20.0,METAR sampled hourly extrema,68.0,0.0,3.0
 2026-09-17,21.1,26.7,23.46666666666667,24,24,1.0,True,23.9,METAR sampled hourly extrema,75.02,0.0,10.019999999999996
-2026-09-18,22.8,28.3,24.813636363636363,22,24,0.9166666666666666,False,,METAR sampled hourly extrema,,,
+2026-09-18,21.7,28.3,24.575,24,24,1.0,True,25.0,METAR sampled hourly extrema,77.0,0.0,12.0
+2026-09-19,17.8,21.1,19.195652173913043,23,24,0.9583333333333334,False,,METAR sampled hourly extrema,,,

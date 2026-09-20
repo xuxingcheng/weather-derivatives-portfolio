@@ -9756,3 +9756,4 @@ date,tmax_c,tmin_c,valid_day,tmean_c,source,tmean_f,hdd65_f_days,cdd65_f_days
 2026-09-15,21.1,13.3,True,17.200000000000003,GHCN-Daily,62.96000000000001,2.039999999999992,0.0
 2026-09-16,,,False,,GHCN-Daily,,,
 2026-09-17,,,False,,GHCN-Daily,,,
+2026-09-18,,,False,,GHCN-Daily,,,

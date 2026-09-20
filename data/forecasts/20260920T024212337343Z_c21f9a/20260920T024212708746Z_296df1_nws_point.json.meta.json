@@ -1,0 +1,26 @@
+{
+  "retrieved_at_utc": "2026-09-20T02:42:12.709857+00:00",
+  "url": "https://api.weather.gov/points/40.6392,-73.7639",
+  "status": 200,
+  "sha256": "106051588ac05047dd6dfdaacf6cf4fdb36e5130fa7b36db0b702baf2fe4d6c9",
+  "headers": {
+    "Server": "nginx/1.28.3",
+    "Content-Type": "application/geo+json",
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Expose-Headers": "X-Correlation-Id, X-Request-Id, X-Server-Id",
+    "X-Request-ID": "01a0bcb1-5258-785b-9681-2505559bd219",
+    "X-Correlation-ID": "1814b259",
+    "X-Server-ID": "vm-cprk-api-ops-app7.ncep.noaa.gov",
+    "Server-Timing": "dtTrId;desc=\"8434b7a7494163c9f1318da6adfe5a2d\", dtSInfo;desc=\"0\", dtRpid;desc=\"-952822479\"",
+    "Content-Encoding": "gzip",
+    "Content-Length": "1009",
+    "Cache-Control": "public, max-age=86400, s-maxage=120",
+    "Expires": "Mon, 21 Sep 2026 02:42:12 GMT",
+    "Date": "Sun, 20 Sep 2026 02:42:12 GMT",
+    "Connection": "keep-alive",
+    "Vary": "Accept-Encoding, Accept,Feature-Flags,Accept-Language",
+    "Set-Cookie": "dtCookie1up6hiss=v_4_srv_1_sn_52357B1F5CD2A52F8153B1F92DED304D_perc_100000_ol_0_mul_1_app-3Aea7c4b59f27d43eb_1; Path=/; Domain=.weather.gov",
+    "X-Edge-Request-ID": "c04e0dc2",
+    "Strict-Transport-Security": "max-age=31536000 ; includeSubDomains ; preload"
+  }
+}
