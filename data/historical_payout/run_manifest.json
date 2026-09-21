@@ -1,0 +1,70 @@
+{
+  "parameters": {
+    "as_of": "2026-09-21T00:30:00Z",
+    "month": 10,
+    "start_year": 2000,
+    "base_f": 65.0,
+    "strike": null,
+    "dollars_per_degree_day": 100.0,
+    "strike_min": 0.0,
+    "strike_max": 500.0,
+    "strike_count": 51
+  },
+  "selected_strike": 224.22000000000003,
+  "strike_basis": "illustrative full eligible sample median HDD",
+  "analysis": "unadjusted historical scenario analysis",
+  "payout_label": "historical expected payout before premium, discounting, and risk adjustments",
+  "date_convention": "NOAA GHCN observing-date labels, not UTC or METAR civil-date rebins; month completion gated at next-month midnight fixed EST (UTC-05), consistent with the repository GHCN evaluation boundary.",
+  "source_selection": {
+    "raw_file": "data/raw/ghcn/20260920T033052159252Z_39c80c_USW00094789.dly",
+    "retrieved_at_utc": "2026-09-20T03:30:52.161805+00:00",
+    "age_hours": 20.985510609722223,
+    "fallback": false,
+    "newer_unusable": [],
+    "excluded": []
+  },
+  "input_provenance": {
+    "source": "GHCN-Daily",
+    "station": "USW00094789",
+    "receipt_id": "e8e5ff762a1a94e28f53c7df",
+    "raw_file": "data/raw/ghcn/20260920T033052159252Z_39c80c_USW00094789.dly",
+    "retrieved_at_utc": "2026-09-20T03:30:52.161805+00:00",
+    "sha256": "6eeab7003dc78cb5266923f6972c346b67f07fb79047c7ad0aac2750f54fa703"
+  },
+  "raw_receipt": {
+    "retrieved_at_utc": "2026-09-20T03:30:52.161805+00:00",
+    "url": "https://www.ncei.noaa.gov/pub/data/ghcn/daily/all/USW00094789.dly",
+    "status": 200,
+    "sha256": "6eeab7003dc78cb5266923f6972c346b67f07fb79047c7ad0aac2750f54fa703",
+    "headers": {
+      "Date": "Sun, 20 Sep 2026 03:30:47 GMT",
+      "Server": "Apache",
+      "Strict-Transport-Security": "max-age=31536000",
+      "Last-Modified": "Sat, 19 Sep 2026 10:42:48 GMT",
+      "ETag": "\"40be6a-65bd3ad8daf0c\"",
+      "Accept-Ranges": "bytes",
+      "Content-Length": "4243050",
+      "Content-Type": "text/plain",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "X-Requested-With, Content-Type",
+      "Keep-Alive": "timeout=3, max=100",
+      "Connection": "Keep-Alive"
+    }
+  },
+  "standard_deviation": "sample (ddof=1)",
+  "percentiles": "linear interpolation",
+  "windows": "Recent windows end in the calendar year before as_of; no replacement of missing years. All history includes a completed current-year selected month if available.",
+  "limitations": "Changing climate and station history can affect representativeness. No climate or station adjustments, premium, discounting, risk adjustment, forecast integration or market pricing. These are revised historical observations available at analysis as_of, not vintages known in each historical year.",
+  "code_sha256": {
+    "historical_payout_analysis.py": "9269bda93e1fdab99726c18c9b271e5cb729895ffbeda064765985d6cb5bd660",
+    "weather_pipeline.py": "69eb6bab83c7a18dae4a1b44cd12fbdccabd69f8a4f18347e138b4f35926ef05"
+  },
+  "output_sha256": {
+    "yearly.csv": "951a7d0914f91ed1d963284a714ae42149d56c3b8fce0366d1cc78588fbb0bff",
+    "excluded_years.csv": "27de5705f8595f93e9a4a286feed1d6557e32b0f6efe4a617c16ae572877134a",
+    "window_summary.csv": "95e3689cb66c14f0cacd49984ab45726c14cca7c3a29a80f9737740fe7a75d90",
+    "strike_sensitivity.csv": "e5ecbf73624b3a16b91adcae08c198e25e5a70de04c360c0de70864093b92d28",
+    "daily.csv": "7525d2e2ee1d17a1820b3a11b31d5939157e1ab18e95da690955ae277c8c2107",
+    "quality_audit.csv": "b106a7ae79b9b72a349d3eb02cf04a5382dfeac0c44b54225898a05a8af122da"
+  }
+}

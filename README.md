@@ -2,6 +2,50 @@
 
 Open `jfk_temperature_history.ipynb` with the project's `.venv/bin/python` kernel. Default execution is offline. JFK (`USW00094789` / `KJFK`), the **2000-01-01** historical start and **65°F** degree-day base are unchanged. This project collects observations and forecast vintages. The separate executed [forecast evaluation notebook](jfk_forecast_evaluation.ipynb) evaluates actual archived forecasts without changing the history notebook. No pricing or trained bias correction is included.
 
+## Historical October HDD and hypothetical contract payouts
+
+Open the executed [historical payout notebook](jfk_historical_payout_analysis.ipynb). Its reusable module is `historical_payout_analysis.py`; both run **offline**, using retained validated GHCN observations for JFK `USW00094789`. This is **unadjusted historical scenario analysis**, not a market-price estimate or trading strategy. Collection and forecast evaluation remain separate.
+
+Reproduce the saved analysis, execute the notebook with the existing helper, and run all tests:
+
+```sh
+.venv/bin/python historical_payout_analysis.py --as-of 2026-09-21T00:30:00Z
+.venv/bin/python execute_notebook.py jfk_historical_payout_analysis.ipynb
+.venv/bin/python -m unittest -v test_historical_payout_analysis test_forecast_evaluation test_weather_pipeline test_collection
+```
+
+Example with an explicitly supplied strike and configurable sensitivity grid:
+
+```sh
+.venv/bin/python historical_payout_analysis.py \
+  --as-of 2026-09-21T00:30:00Z --month 10 --start-year 2000 --base-f 65 \
+  --strike 225 --dollars-per-degree-day 100 \
+  --strike-min 100 --strike-max 400 --strike-count 61 \
+  --output data/historical_payout_strike225
+```
+
+All options are also fields of the notebook's `Config` object. Defaults are October, start year 2000, base 65°F, $100 per HDD, and 51 sensitivity strikes from 0 to 500. The default as-of is pinned to **2026-09-21 00:30 UTC**, not the execution clock. Timestamps require an explicit timezone. Omitting `--strike` uses the **full eligible sample median HDD as an illustrative strike**, shared across all windows. A custom base changes the generic `monthly_hdd_f_days` index; only base 65 is called HDD65.
+
+The latest valid GHCN snapshot retrieved by the as-of wins, using the existing HTTP status, checksum, station and fixed-width validation. The selected snapshot for this run was retrieved **2026-09-20 03:30:52.161805 UTC**. Missing sentinel values, nonblank quality flags and reversed extrema invalidate a day. Daily mean is `(TMAX + TMIN)/2` in Celsius, then converted to Fahrenheit. No older snapshot patches gaps in the selected snapshot, and no missing HDD is filled with zero.
+
+Dates preserve NOAA GHCN observing-date labels. A month must have every calendar day valid and be completed by as-of; the completion gate uses next-month midnight fixed EST (UTC−05), consistent with the repository GHCN evaluation boundary. Observations are not rebinned into METAR civil dates. These are revised historical data available at the selected retrieval cutoff, not historical vintages known in each analyzed year. An as-of before the first retained usable receipt fails explicitly.
+
+`data/historical_payout/` contains `yearly.csv`, `excluded_years.csv`, `window_summary.csv`, `strike_sensitivity.csv`, supporting `daily.csv` and `quality_audit.csv`, and `run_manifest.json`. The yearly table includes expected/valid days, completeness fraction, eligibility, index, payout, exact invalid dates, exclusion reasons and source provenance. Excluded indices and payouts are null, never zero. The manifest saves all parameters, resolved strike, source selection and receipt, input SHA-256, code hashes, output hashes, statistical definitions and limitations. Outputs are reproducible and separate from `data/processed/` and `data/evaluation/`; choose another `--output` directory to retain multiple scenarios.
+
+The recent windows end in the calendar year before as-of: **2006–2025** and **2016–2025** here. Missing years never extend either window; a later configured start year can truncate coverage. Full history can include a completed selected month in the current year. Other calendar months never count as extra October observations. Standard deviation uses `ddof=1`; percentiles use linear interpolation. Empty windows have zero valid years and undefined statistics; fewer than two years have undefined sample standard deviation.
+
+The pinned run has **26 complete Octobers (2000–2025), with no historical-year exclusions**. October 2026 is listed separately as excluded: it is not completed and has no valid days yet. With the illustrative **224.22 HDD strike** and **$100 per degree-day**:
+
+| History | Valid years | Mean HDD65 | Sample SD | Historical average payout | Positive payout fraction |
+|---|---:|---:|---:|---:|---:|
+| 2000–2025 | 26 | 222.83 | 59.13 | $2,298.92 | 50% |
+| 2006–2025 | 20 | 206.11 | 55.61 | $1,358.55 | 35% |
+| 2016–2025 | 10 | 189.38 | 56.56 | $713.10 | 20% |
+
+The notebook and summary export also report median, minimum, maximum and 10th/25th/75th/90th percentiles. Payouts are computed separately as `100 × max(yearly HDD65 − 224.22, 0)`, then averaged; the payoff of average HDD is not the average payoff. All payout averages are **historical expected payout before premium, discounting, and risk adjustments**. The historical maximum is not a contractual payout cap. No profitability or investment returns are calculated without a premium.
+
+Changing climate and station history can affect how representative older observations are. These overlapping historical windows remain unadjusted; their differences do not establish a trend or forecast future payout probabilities. Live-forecast integration, bias correction and market pricing remain later stages. Verification: **39 tests passed**, including seven historical-analysis tests; the notebook was executed offline with all four requested plots.
+
 ## Forecast evaluation
 
 See [EVALUATION.md](EVALUATION.md) for timing/source evidence, selection and matching rules, formulas, provenance, reproduction instructions and current results. The focused module is `forecast_evaluation.py`; default as-of is pinned to **2026-09-21 00:30 UTC** and execution is offline.

@@ -361,11 +361,12 @@ def build_ensemble_archive(root=None, output=None):
     return table, receipts
 
 
-def degree_days(frame):
+def degree_days(frame, base_f=BASE_F):
+    """Temperature conversion and degree days; legacy column names assume base 65."""
     f = frame.copy()
     f['tmean_f'] = f.tmean_c * 1.8 + 32
-    f['hdd65_f_days'] = (BASE_F - f.tmean_f).clip(lower=0)
-    f['cdd65_f_days'] = (f.tmean_f - BASE_F).clip(lower=0)
+    f['hdd65_f_days'] = (base_f - f.tmean_f).clip(lower=0)
+    f['cdd65_f_days'] = (f.tmean_f - base_f).clip(lower=0)
     return f
 
 def ghcn_daily(path, start=START, end=None):
