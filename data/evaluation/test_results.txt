@@ -1,0 +1,67 @@
+/Users/stevenxu/Documents/ChatGPT/Weather Derivative/.venv/lib/python3.9/site-packages/urllib3/__init__.py:35: NotOpenSSLWarning: urllib3 v2 only supports OpenSSL 1.1.1+, currently the 'ssl' module is compiled with 'LibreSSL 2.8.3'. See: https://github.com/urllib3/urllib3/issues/3020
+  warnings.warn(
+test_basic_quality_screen (test_forecast_evaluation.EvaluationTests) ... ok
+test_common_pairs_do_not_mix_cutoffs (test_forecast_evaluation.EvaluationTests) ... ok
+test_complete_daily_proxies_and_partial_day (test_forecast_evaluation.EvaluationTests) ... ok
+test_config_requires_explicit_timezones (test_forecast_evaluation.EvaluationTests) ... ok
+test_correction_qc_no_fallback (test_forecast_evaluation.EvaluationTests) ... ok
+test_cutoff_and_stale (test_forecast_evaluation.EvaluationTests) ... ok
+test_dst_and_ghcn_fixed_standard_time (test_forecast_evaluation.EvaluationTests) ... ok
+test_duplicates_do_not_refresh_age_or_weight (test_forecast_evaluation.EvaluationTests) ... ok
+test_matching_boundary_offset_and_missing (test_forecast_evaluation.EvaluationTests) ... ok
+test_metric_formulas_and_complete_member_identity (test_forecast_evaluation.EvaluationTests) ... ok
+test_nearest_tie_earlier_and_qc_exclusion (test_forecast_evaluation.EvaluationTests) ... ok
+test_observations_retrieved_after_cutoff_cannot_predict (test_forecast_evaluation.EvaluationTests) ... ok
+test_additional_member_retained_and_missing_control_flagged (test_weather_pipeline.EnsembleTests) ... ok
+test_collection_metadata_failure_preserves_forecast (test_weather_pipeline.EnsembleTests) ... ok
+test_http_failure_retains_body_and_retries (test_weather_pipeline.EnsembleTests) ... ok
+test_members_control_timestamps_and_units (test_weather_pipeline.EnsembleTests) ... ok
+test_partial_members_nulls_and_bad_arrays (test_weather_pipeline.EnsembleTests) ... ok
+test_publication_delay_and_all_null_archive (test_weather_pipeline.EnsembleTests) ... ok
+test_reject_ambiguous_timestamps_units_and_duplicate_axes (test_weather_pipeline.EnsembleTests) ... ok
+test_snapshot_identity_and_idempotent_rebuild (test_weather_pipeline.EnsembleTests) ... /Users/runner/work/crossbow/crossbow/arrow/cpp/src/arrow/util/cpu_info.cc:239: IOError: sysctlbyname failed for 'hw.l1dcachesize'. Detail: [errno 1] Operation not permitted
+/Users/runner/work/crossbow/crossbow/arrow/cpp/src/arrow/util/cpu_info.cc:239: IOError: sysctlbyname failed for 'hw.l2cachesize'. Detail: [errno 1] Operation not permitted
+/Users/runner/work/crossbow/crossbow/arrow/cpp/src/arrow/util/cpu_info.cc:239: IOError: sysctlbyname failed for 'hw.l3cachesize'. Detail: [errno 1] Operation not permitted
+/Users/runner/work/crossbow/crossbow/arrow/cpp/src/arrow/util/cpu_info.cc:239: IOError: sysctlbyname failed for 'hw.optional.neon'. Detail: [errno 1] Operation not permitted
+ok
+test_source_failure_does_not_stop_other_sources (test_weather_pipeline.EnsembleTests) ... ok
+test_degree_days_and_incomplete_month (test_weather_pipeline.WeatherTests) ... ok
+test_ghcn_flags_missing_and_reversed (test_weather_pipeline.WeatherTests) ... ok
+test_metar_dst_and_correction (test_weather_pipeline.WeatherTests) ... ok
+test_daily_due_and_revision_reprocessing (test_collection.CollectionTests) ... ok
+test_failed_then_successful_then_unsuccessful_retries (test_collection.CollectionTests) ... ok
+test_health_unchanged_failure_grace_and_transport_error (test_collection.CollectionTests) ... ok
+test_http_retry_receipts_success_and_exhaustion (test_collection.CollectionTests) ... ok
+test_metadata_status_hash_and_structure_required (test_collection.CollectionTests) ... ok
+test_metar_failed_downloads_excluded_and_cutoff_provenance (test_collection.CollectionTests) ... ok
+test_parquet_nulls_members_receipts_exact_and_repeatable (test_collection.CollectionTests) ... ok
+test_refresh_and_build_isolate_source_failures (test_collection.CollectionTests) ... ok
+
+----------------------------------------------------------------------
+Ran 32 tests in 0.626s
+
+OK
+{
+  "archive": "/var/folders/5d/vsftrsss4l7f0ppf82dy4lzr0000gn/T/tmpdaca4oa5/data/forecasts/20260921T004340856529Z_59d1ba",
+  "started_at_utc": "2026-09-21T00:43:40.856783+00:00",
+  "station": "KJFK",
+  "products": {
+    "nws_point": "raw_nws_point.json",
+    "nws_hourly": "raw_nws_hourly.json",
+    "metar": "raw_metar.json",
+    "ensemble_ecmwf_ifs025": "ecmwf.json"
+  },
+  "errors": {
+    "ghcn": "GHCN outage",
+    "taf": "TAF outage",
+    "ensemble_gfs025": "GEFS outage"
+  },
+  "forecast_valid_through": "2026-09-18T01:00:00Z",
+  "ensemble_summaries": {
+    "ecmwf_ifs025": {
+      "raw_file": "ecmwf.json",
+      "usable_future_values": 10
+    }
+  },
+  "completed_at_utc": "2026-09-21T00:43:40.860126+00:00"
+}

@@ -1,0 +1,34 @@
+model,statistic,quantity,candidate_targets,matched_targets,unique_target_dates,forecast_snapshots,unique_target_times,scored_cutoffs,matched_start,matched_end
+ecmwf_ifs025,mean,cdd_proxy_f_days,192,0,0,0,0,0,,
+ecmwf_ifs025,mean,hdd_proxy_f_days,192,0,0,0,0,0,,
+ecmwf_ifs025,mean,hourly_temperature_c,4320,420,4,4,72,11,2026-09-18 01:00:00+00:00,2026-09-21 00:00:00+00:00
+ecmwf_ifs025,mean,midpoint_proxy_c,192,0,0,0,0,0,,
+ecmwf_ifs025,mean,tmax_proxy_c,192,0,0,0,0,0,,
+ecmwf_ifs025,mean,tmin_proxy_c,192,0,0,0,0,0,,
+ecmwf_ifs025,median,cdd_proxy_f_days,192,0,0,0,0,0,,
+ecmwf_ifs025,median,hdd_proxy_f_days,192,0,0,0,0,0,,
+ecmwf_ifs025,median,hourly_temperature_c,4320,420,4,4,72,11,2026-09-18 01:00:00+00:00,2026-09-21 00:00:00+00:00
+ecmwf_ifs025,median,midpoint_proxy_c,192,0,0,0,0,0,,
+ecmwf_ifs025,median,tmax_proxy_c,192,0,0,0,0,0,,
+ecmwf_ifs025,median,tmin_proxy_c,192,0,0,0,0,0,,
+gfs025,mean,cdd_proxy_f_days,132,0,0,0,0,0,,
+gfs025,mean,hdd_proxy_f_days,132,0,0,0,0,0,,
+gfs025,mean,hourly_temperature_c,2880,420,4,4,72,11,2026-09-18 01:00:00+00:00,2026-09-21 00:00:00+00:00
+gfs025,mean,midpoint_proxy_c,132,0,0,0,0,0,,
+gfs025,mean,tmax_proxy_c,132,0,0,0,0,0,,
+gfs025,mean,tmin_proxy_c,132,0,0,0,0,0,,
+gfs025,median,cdd_proxy_f_days,132,0,0,0,0,0,,
+gfs025,median,hdd_proxy_f_days,132,0,0,0,0,0,,
+gfs025,median,hourly_temperature_c,2880,420,4,4,72,11,2026-09-18 01:00:00+00:00,2026-09-21 00:00:00+00:00
+gfs025,median,midpoint_proxy_c,132,0,0,0,0,0,,
+gfs025,median,tmax_proxy_c,132,0,0,0,0,0,,
+gfs025,median,tmin_proxy_c,132,0,0,0,0,0,,
+nws,deterministic,cdd_proxy_f_days,94,0,0,0,0,0,,
+nws,deterministic,hdd_proxy_f_days,94,0,0,0,0,0,,
+nws,deterministic,hourly_temperature_c,1872,420,4,4,72,11,2026-09-18 01:00:00+00:00,2026-09-21 00:00:00+00:00
+nws,deterministic,midpoint_proxy_c,94,0,0,0,0,0,,
+nws,deterministic,tmax_proxy_c,94,0,0,0,0,0,,
+nws,deterministic,tmin_proxy_c,94,0,0,0,0,0,,
+persistence_for_ecmwf_ifs025,persistence,hourly_temperature_c,4320,162,4,4,72,4,2026-09-18 01:00:00+00:00,2026-09-21 00:00:00+00:00
+persistence_for_gfs025,persistence,hourly_temperature_c,2880,162,4,4,72,4,2026-09-18 01:00:00+00:00,2026-09-21 00:00:00+00:00
+persistence_for_nws,persistence,hourly_temperature_c,1872,162,4,4,72,4,2026-09-18 01:00:00+00:00,2026-09-21 00:00:00+00:00

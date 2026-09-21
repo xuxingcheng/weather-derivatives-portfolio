@@ -1,0 +1,13 @@
+{
+  "offline_rebuild": "passed with Requests disabled",
+  "exact_reproduction": [
+    "hourly_members",
+    "daily_members",
+    "scores",
+    "metar_vintages"
+  ],
+  "invariants": {
+    "scored_rows": 2586,
+    "invariants": "passed"
+  }
+}

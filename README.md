@@ -1,6 +1,18 @@
 # JFK temperature history and forecast archive
 
-Open `jfk_temperature_history.ipynb` with the project's `.venv/bin/python` kernel. Default execution is offline. JFK (`USW00094789` / `KJFK`), the **2000-01-01** historical start and **65°F** degree-day base are unchanged. This project collects observations and forecast vintages; this change adds no pricing or forecast evaluation.
+Open `jfk_temperature_history.ipynb` with the project's `.venv/bin/python` kernel. Default execution is offline. JFK (`USW00094789` / `KJFK`), the **2000-01-01** historical start and **65°F** degree-day base are unchanged. This project collects observations and forecast vintages. The separate executed [forecast evaluation notebook](jfk_forecast_evaluation.ipynb) evaluates actual archived forecasts without changing the history notebook. No pricing or trained bias correction is included.
+
+## Forecast evaluation
+
+See [EVALUATION.md](EVALUATION.md) for timing/source evidence, selection and matching rules, formulas, provenance, reproduction instructions and current results. The focused module is `forecast_evaluation.py`; default as-of is pinned to **2026-09-21 00:30 UTC** and execution is offline.
+
+```sh
+.venv/bin/python forecast_evaluation.py
+.venv/bin/python execute_notebook.py jfk_forecast_evaluation.ipynb
+.venv/bin/python -m unittest -v test_forecast_evaluation test_weather_pipeline test_collection
+```
+
+The initial run has **420 matched cutoff–hour pairs per model**, covering **72 distinct target hours**, **four local target dates**, **11 scored cutoffs**, and **four scored snapshots per model**. These are dependent, repeated forecast decisions, not 420 independent weather observations. There are **zero eligible complete daily GHCN pairs**. Daily HDD/CDD, monthly totals, long-range skill, interval calibration and winning-model claims are unsupported. METAR and GHCN verification remain separate; GHCN CF6 windows use fixed local standard time and sampled forecast extrema are explicitly proxies. All 32 tests passed; the offline rebuild exactly reproduced saved member and score tables.
 
 ## Commands
 
