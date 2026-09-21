@@ -1,0 +1,13 @@
+{
+  "retrieved_at_utc": "2026-09-21T00:17:01.697152+00:00",
+  "url": "https://ensemble-api.open-meteo.com/v1/ensemble?latitude=40.6392&longitude=-73.7639&hourly=temperature_2m&models=ecmwf_ifs025&forecast_days=15&temperature_unit=celsius&timezone=GMT&timeformat=unixtime&cell_selection=land&elevation=2.7",
+  "status": 200,
+  "sha256": "eefb5eca6a07239aa32a1fc0fd29abd2245c38e3226fd4cf324a1b1833790b92",
+  "headers": {
+    "Date": "Mon, 21 Sep 2026 00:17:01 GMT",
+    "Content-Type": "application/json; charset=utf-8",
+    "Transfer-Encoding": "chunked",
+    "Connection": "keep-alive",
+    "Content-Encoding": "deflate"
+  }
+}

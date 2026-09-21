@@ -1,7 +1,7 @@
 {
-  "rows": 103200,
-  "snapshots": 8,
-  "receipts": 14,
-  "null_temperatures": 1104,
+  "rows": 129000,
+  "snapshots": 10,
+  "receipts": 16,
+  "null_temperatures": 1656,
   "exact_round_trip": true
 }
