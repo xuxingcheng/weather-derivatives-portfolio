@@ -2,6 +2,41 @@
 
 Open `jfk_temperature_history.ipynb` with the project's `.venv/bin/python` kernel. Default execution is offline. JFK (`USW00094789` / `KJFK`), the **2000-01-01** historical start and **65°F** degree-day base are unchanged. This project collects observations and forecast vintages. The separate executed [forecast evaluation notebook](jfk_forecast_evaluation.ipynb) evaluates actual archived forecasts without changing the history notebook. No pricing or trained bias correction is included.
 
+## Chronological October baseline backtest
+
+The executed [baseline backtest notebook](jfk_baseline_backtest.ipynb) asks which simple historical method predicted later Octobers most reliably. [baseline_backtest.py](baseline_backtest.py) runs offline using the existing validated GHCN loader, complete-month checks, HDD calculations, hypothetical payout function, and empirical CRPS/interval metrics. These are **retrospective chronological tests of revised observations in a retained snapshot**, not reconstructions of data available at each historical prediction date.
+
+```sh
+.venv/bin/python baseline_backtest.py
+.venv/bin/python execute_notebook.py jfk_baseline_backtest.ipynb
+.venv/bin/python -m unittest discover -v
+# Explicit fixed strike and separate output directory:
+.venv/bin/python baseline_backtest.py --strike 225 --output data/baseline_backtest_fixed225
+```
+
+Defaults: `--as-of 2026-09-21T00:30:00Z`, `--start-year 2000`, `--min-training-years 10`, October, HDD65, and $100 per HDD. The default strike is recomputed for each prediction year from the **median of eligible expanding training years only**, then shared by all methods and the realized outcome. It never automatically uses the full-sample 224.22 median. Apply the nonlinear payout to each scenario before averaging.
+
+The four methods are expanding history, preceding 10 calendar years, preceding 20 calendar years, and an expanding temperature trend adjustment. Each historical October is one equally weighted scenario. Window methods require `max(min_training_years, window_length)` complete Octobers within that exact window; missing years are not replaced by older years. The configurable minimum must be at least two, and values above a window's length disable that window method. Ineligible test Octobers and insufficient training histories are recorded as skipped folds.
+
+For the trend method, fit OLS to one October average daily-mean Celsius temperature per prior complete year. Shift each historical daily sequence by `slope × (prediction_year − historical_year)`, then convert to Fahrenheit, apply daily HDD65 and sum. This preserves daily variation and annual residuals. It is a statistical adjustment, not proven climate attribution. Fixed sensitivity diagnostics halve the expanding trend shift and fit the trend using the preceding 20 calendar years; they are not optimized on held-out scores. Historical-window sensitivity is also shown through paired recent-10/recent-20 comparisons.
+
+**Only six test years, 2020–2025, are shared by all four methods.** The other three methods each have 16 test years, 2010–2025. Comparisons on all six common years are:
+
+| Method | HDD bias | HDD MAE | HDD RMSE | CRPS | 10–90% coverage | Mean width | Payout MAE |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Expanding | 44.97 | 52.16 | 70.56 | 41.85 | 66.7% | 137.91 | $1,801.90 |
+| Recent 10 | 12.51 | 46.41 | 57.63 | 34.94 | 66.7% | 107.61 | $605.53 |
+| Recent 20 | 37.80 | 50.23 | 66.85 | 39.17 | 83.3% | 143.01 | $1,417.08 |
+| Temperature trend | −10.01 | 51.38 | 58.26 | 36.30 | 66.7% | 104.63 | $355.78 |
+
+HDD errors and widths are °F-days; bias is predicted minus observed. Over 2010–2025, expanding/recent-10/trend HDD MAEs are **52.62 / 44.74 / 40.80**, respectively, and CRPS values are **40.60 / 34.32 / 30.45**. Thus the descriptive ranking depends on the test period and metric. Recent-10 has the lowest common-year HDD MAE and CRPS; trend has the lowest common-year payout MAE. **No statistically established winner is claimed.** Six held-out calendar years, overlapping training periods, possible annual dependence, changing station/climate conditions, and sensitivity to trend assumptions limit conclusions.
+
+`data/baseline_backtest/` contains `yearly.csv` (coverage and input provenance), `folds.csv` (all candidates, skips, exact training/excluded/outside-window years, strike basis and training years, trend parameters), `scenarios.csv` (historical-year weights, temperature shifts, HDD and payouts), `scores.csv` (annual predictions, outcomes, errors, intervals and positive-payout frequencies), `metrics_individual.csv`, `metrics_common.csv` (all-method, all pairwise, and sensitivity intersections), `quality_audit.csv`, and `run_manifest.json` (configuration, raw receipt, source/input/code/output hashes, definitions and limitations). Empty comparisons report zero years and undefined metrics. Use another output directory to retain another configuration.
+
+The notebook shows coverage, predicted versus realized HDD and payouts, annual errors, interval coverage/widths, common-year tables and assumption sensitivity. Weather prediction intervals are **not confidence intervals for model performance**; no performance sampling intervals are estimated. Any future resampling should use whole years, paired across methods and accounting for dependence. More bootstrap draws do not create independent years. Hypothetical payout forecasts imply neither market prices nor investment returns. Existing collection, forecast evaluation and historical payout workflows are unchanged.
+
+Verification: **47 tests passed**, including eight new baseline tests for leakage, calendar windows, training-only strike/trend fitting, nonlinear transformations, payouts, common-year matching, offline execution and deterministic exports. The baseline notebook executed successfully with five figures.
+
 ## Historical October HDD and hypothetical contract payouts
 
 Open the executed [historical payout notebook](jfk_historical_payout_analysis.ipynb). Its reusable module is `historical_payout_analysis.py`; both run **offline**, using retained validated GHCN observations for JFK `USW00094789`. This is **unadjusted historical scenario analysis**, not a market-price estimate or trading strategy. Collection and forecast evaluation remain separate.

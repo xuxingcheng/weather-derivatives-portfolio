@@ -1,0 +1,82 @@
+{
+  "parameters": {
+    "as_of": "2026-09-21T00:30:00Z",
+    "start_year": 2000,
+    "min_training_years": 10,
+    "strike": null
+  },
+  "analysis": "Retrospective chronological tests using revised observations from a retained snapshot",
+  "input_provenance": {
+    "source": "GHCN-Daily",
+    "station": "USW00094789",
+    "receipt_id": "e8e5ff762a1a94e28f53c7df",
+    "raw_file": "data/raw/ghcn/20260920T033052159252Z_39c80c_USW00094789.dly",
+    "retrieved_at_utc": "2026-09-20T03:30:52.161805+00:00",
+    "sha256": "6eeab7003dc78cb5266923f6972c346b67f07fb79047c7ad0aac2750f54fa703"
+  },
+  "source_selection": {
+    "raw_file": "data/raw/ghcn/20260920T033052159252Z_39c80c_USW00094789.dly",
+    "retrieved_at_utc": "2026-09-20T03:30:52.161805+00:00",
+    "age_hours": 23.469280072777778,
+    "fallback": false,
+    "newer_unusable": [],
+    "excluded": []
+  },
+  "raw_receipt": {
+    "retrieved_at_utc": "2026-09-20T03:30:52.161805+00:00",
+    "url": "https://www.ncei.noaa.gov/pub/data/ghcn/daily/all/USW00094789.dly",
+    "status": 200,
+    "sha256": "6eeab7003dc78cb5266923f6972c346b67f07fb79047c7ad0aac2750f54fa703",
+    "headers": {
+      "Date": "Sun, 20 Sep 2026 03:30:47 GMT",
+      "Server": "Apache",
+      "Strict-Transport-Security": "max-age=31536000",
+      "Last-Modified": "Sat, 19 Sep 2026 10:42:48 GMT",
+      "ETag": "\"40be6a-65bd3ad8daf0c\"",
+      "Accept-Ranges": "bytes",
+      "Content-Length": "4243050",
+      "Content-Type": "text/plain",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Headers": "X-Requested-With, Content-Type",
+      "Keep-Alive": "timeout=3, max=100",
+      "Connection": "Keep-Alive"
+    }
+  },
+  "date_convention": "NOAA GHCN observing-date labels, not UTC or METAR civil-date rebins; month completion gated at next-month midnight fixed EST (UTC-05), consistent with the repository GHCN evaluation boundary.",
+  "contract": {
+    "month": 10,
+    "base_f": 65,
+    "dollars_per_degree_day": 100
+  },
+  "methods": [
+    "expanding",
+    "recent_10",
+    "recent_20",
+    "temperature_trend"
+  ],
+  "sensitivity_methods": [
+    "trend_half_shift",
+    "trend_recent_20"
+  ],
+  "window_rule": "Require max(min_training_years, window_length) complete prior Octobers inside the calendar window; never backfill.",
+  "trend": "OLS on one October average daily-mean temperature per training year. Shift each daily sequence by slope * (prediction_year - historical_year), then recalculate HDD65. Half-shift and recent-20 fits are fixed sensitivity assumptions.",
+  "weighting": "Equal historical-year scenario weights; equal test-year score weights.",
+  "metrics": "Error = predicted minus realized. Empirical CRPS; linear p10/p90 interpolation; inclusive interval coverage.",
+  "uncertainty": "Intervals describe weather outcomes, not confidence in performance estimates. No performance confidence intervals or bootstrap are estimated.",
+  "limitations": "Revised snapshot, not historical publication vintages. Only a few common years for recent_20. Overlapping training samples and possible serial dependence. No established winner, climate attribution, test-driven tuning, live ensembles, market prices or investment returns.",
+  "code_sha256": {
+    "baseline_backtest.py": "7b5e934f827b4eb4c7e497c3a103938b0aac8d93e7e4a7468b6cbf71dcb733ee",
+    "historical_payout_analysis.py": "9269bda93e1fdab99726c18c9b271e5cb729895ffbeda064765985d6cb5bd660",
+    "weather_pipeline.py": "69eb6bab83c7a18dae4a1b44cd12fbdccabd69f8a4f18347e138b4f35926ef05",
+    "forecast_evaluation.py": "5f03c8034d1f275d3337484afeaf8b6487379045820ebe1b8c9a59c1f363f8da"
+  },
+  "output_sha256": {
+    "yearly.csv": "95526ec4b67f4f012bb160ce2348df6b91a9f63ef0c1c2f56a17bba520333a92",
+    "folds.csv": "05afa1ffef791793757e4ab2ce57797390b0ffd19a43aba5ff990078b51c223d",
+    "scores.csv": "396f5a7ea2a5a38955638a87c1975a4e1b6e2d7fc1e9d2b07a0d977f0e0c9b6f",
+    "scenarios.csv": "c3bda5485377d4863015235becdefc37d4e8b29e7a0dbfa00ea6ad3a8f0f66b5",
+    "metrics_individual.csv": "4ddfec42bdfb77787f55847edf3604c9c844b7747fdfc3df9c80b54b9e73dd05",
+    "metrics_common.csv": "e29c3d76eccf39031b911017f565257c944da78064bce1f3ad8b075cfbbd324f",
+    "quality_audit.csv": "b106a7ae79b9b72a349d3eb02cf04a5382dfeac0c44b54225898a05a8af122da"
+  }
+}
